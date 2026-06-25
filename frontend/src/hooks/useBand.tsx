@@ -9,6 +9,7 @@ interface BandContextValue {
   refresh: () => Promise<void>;
   createBand: (name: string, stylePreferences?: string[]) => Promise<void>;
   joinBand: (inviteCode: string) => Promise<void>;
+  leaveBand: (bandId: string) => Promise<{ disbanded: boolean; message: string }>;
 }
 
 const BandContext = createContext<BandContextValue | null>(null);
@@ -47,9 +48,15 @@ export function BandProvider({ children }: { children: ReactNode }) {
     setBand(joined);
   }, []);
 
+  const leaveBand = useCallback(async (bandId: string) => {
+    const result = await bandsApi.leaveBand(bandId);
+    setBand(null);
+    return result;
+  }, []);
+
   const value = useMemo(
-    () => ({ band, loading, refresh, createBand, joinBand }),
-    [band, loading, refresh, createBand, joinBand],
+    () => ({ band, loading, refresh, createBand, joinBand, leaveBand }),
+    [band, loading, refresh, createBand, joinBand, leaveBand],
   );
 
   return <BandContext.Provider value={value}>{children}</BandContext.Provider>;

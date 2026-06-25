@@ -135,3 +135,29 @@ export async function updateMyMemberProfile(input: {
     },
   });
 }
+
+export async function leaveBand(input: { bandId: string; userId: string }) {
+  const membership = await prisma.bandMember.findUnique({
+    where: { bandId_userId: { bandId: input.bandId, userId: input.userId } },
+  });
+  if (!membership) {
+    throw Object.assign(new Error('你不是该乐队成员'), { statusCode: 403 });
+  }
+
+  const memberCount = await prisma.bandMember.count({
+    where: { bandId: input.bandId },
+  });
+
+  await prisma.$transaction(async (tx) => {
+    await tx.practiceLog.deleteMany({
+      where: { bandId: input.bandId, userId: input.userId },
+    });
+    await tx.bandMember.delete({ where: { id: membership.id } });
+
+    if (memberCount === 1) {
+      await tx.band.delete({ where: { id: input.bandId } });
+    }
+  });
+
+  return { disbanded: memberCount === 1 };
+}

@@ -96,4 +96,21 @@ export async function registerBandRoutes(app: FastifyInstance) {
       });
     }
   });
+
+  app.delete('/bands/:id/members/me', { preHandler: authenticate }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    try {
+      const result = await bandService.leaveBand({
+        bandId: id,
+        userId: request.userId!,
+      });
+      return { ...result, message: result.disbanded ? '你已退出乐队，乐队已解散' : '你已退出乐队' };
+    } catch (error) {
+      const err = error as Error & { statusCode?: number };
+      return reply.status(err.statusCode ?? 500).send({
+        error: { code: 'LEAVE_BAND_FAILED', message: err.message },
+      });
+    }
+  });
 }

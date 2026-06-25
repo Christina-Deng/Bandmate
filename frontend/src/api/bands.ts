@@ -26,3 +26,10 @@ export async function updateMyProfile(
   );
   return data.member;
 }
+
+export async function leaveBand(bandId: string) {
+  const { data } = await api.delete<{ disbanded: boolean; message: string }>(
+    `/bands/${bandId}/members/me`,
+  );
+  return data;
+}
