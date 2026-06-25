@@ -22,7 +22,7 @@ export function TeamStatusPanel({
             >
               <span>{member.displayName}</span>
               {member.checkedIn ? (
-                <span className="text-sm text-emerald-400">
+                <span className="text-sm text-accent-600">
                   ✅ 已练 {member.durationMinutes} 分钟
                 </span>
               ) : (

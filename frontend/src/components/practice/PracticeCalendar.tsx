@@ -34,11 +34,11 @@ export function PracticeCalendar({
   return (
     <div className="rounded-xl border border-slate-700 bg-slate-900 p-4">
       <div className="mb-3 flex items-center justify-between">
-        <button type="button" onClick={() => shiftMonth(-1)} className="px-2 hover:text-indigo-300">
+        <button type="button" onClick={() => shiftMonth(-1)} className="px-2 text-slate-400 hover:text-emphasis">
           ←
         </button>
         <span className="font-medium">{month}</span>
-        <button type="button" onClick={() => shiftMonth(1)} className="px-2 hover:text-indigo-300">
+        <button type="button" onClick={() => shiftMonth(1)} className="px-2 text-slate-400 hover:text-emphasis">
           →
         </button>
       </div>
@@ -55,10 +55,10 @@ export function PracticeCalendar({
               onClick={() => onSelectDate(selected ? null : dateStr)}
               className={`rounded-lg py-2 ${
                 selected
-                  ? 'bg-indigo-600'
+                  ? 'bg-accent-600 text-white'
                   : hasLog
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'hover:bg-slate-800'
+                    ? 'bg-slate-700 text-white'
+                    : 'text-slate-400 hover:bg-slate-800'
               }`}
             >
               {day}

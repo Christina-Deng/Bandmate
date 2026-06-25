@@ -32,13 +32,13 @@ export function BandHomePage() {
       </div>
 
       {error && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p className="rounded-lg border border-accent-600/40 bg-accent-600/10 px-4 py-3 text-sm text-red-400">
           {error}
         </p>
       )}
 
       {leaveMessage && (
-        <p className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+        <p className="rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-sm text-slate-200">
           {leaveMessage}
         </p>
       )}
@@ -71,7 +71,7 @@ export function BandHomePage() {
                 setShowJoin(false);
                 setShowCreate((v) => !v);
               }}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium hover:bg-indigo-500"
+              className="rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium hover:bg-accent-500"
             >
               {showCreate ? '收起' : '成立乐队'}
             </button>
@@ -81,7 +81,7 @@ export function BandHomePage() {
                 setShowCreate(false);
                 setShowJoin((v) => !v);
               }}
-              className="rounded-lg border border-indigo-500 px-4 py-2 text-sm hover:bg-indigo-500/10"
+              className="rounded-lg border border-accent-500 px-4 py-2 text-sm hover:bg-accent-500/10"
             >
               {showJoin ? '收起' : '加入乐队'}
             </button>

@@ -33,14 +33,14 @@ export function MemberCard({
           <p className="text-sm text-slate-400">{INSTRUMENT_LABELS[member.instrument]}</p>
         </div>
         {!complete && (
-          <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs text-amber-300">
+          <span className="rounded bg-slate-700 px-2 py-0.5 text-xs text-slate-200">
             资料未完善
           </span>
         )}
       </div>
-      <div className="mt-3 text-amber-300">
+      <div className="mt-3 text-accent-400">
         {'★'.repeat(member.skillLevel)}
-        <span className="text-slate-600">{'★'.repeat(5 - member.skillLevel)}</span>
+        <span className="text-slate-700">{'★'.repeat(5 - member.skillLevel)}</span>
       </div>
 
       {complete && (

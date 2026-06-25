@@ -42,7 +42,7 @@ export function LeaveBandConfirmDialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
       onMouseDown={handleBackdropClick}
     >
       <div
@@ -52,7 +52,7 @@ export function LeaveBandConfirmDialog({
         className="w-full max-w-md rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl"
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <h2 id="leave-band-title" className="text-lg font-semibold text-red-200">
+        <h2 id="leave-band-title" className="text-lg font-semibold text-emphasis">
           确认退出乐队
         </h2>
 
@@ -61,7 +61,7 @@ export function LeaveBandConfirmDialog({
         </p>
 
         {isLastMember ? (
-          <p className="mt-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+          <p className="mt-2 rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300">
             你是最后一名成员，退出后乐队将被解散，此操作不可撤销。
           </p>
         ) : (
@@ -71,7 +71,7 @@ export function LeaveBandConfirmDialog({
         )}
 
         {error && (
-          <p className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+          <p className="mt-3 rounded-lg border border-accent-600/40 bg-accent-600/10 px-3 py-2 text-sm text-red-400">
             {error}
           </p>
         )}
@@ -89,7 +89,7 @@ export function LeaveBandConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium hover:bg-red-500 disabled:opacity-50"
+            className="rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium hover:bg-accent-500 disabled:opacity-50"
           >
             {loading ? '退出中…' : '确定退出'}
           </button>

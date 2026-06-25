@@ -39,7 +39,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <form
         onSubmit={handleSubmit}
         className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 p-6"
@@ -47,7 +47,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
         <h2 className="text-lg font-semibold">完善我的资料</h2>
 
         <section className="mt-4 space-y-2">
-          <h3 className="text-sm font-medium text-indigo-300">乐器</h3>
+          <h3 className="text-sm font-semibold text-emphasis">乐器</h3>
           <select
             className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
             value={instrument}
@@ -65,7 +65,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
         </section>
 
         <section className="mt-4 space-y-2">
-          <h3 className="text-sm font-medium text-indigo-300">学习年限（计入等级）</h3>
+          <h3 className="text-sm font-semibold text-emphasis">学习年限（计入等级）</h3>
           <p className="text-xs text-slate-400">请选择你系统学习或持续演奏该乐器的时长</p>
           {PLAYING_EXPERIENCE_OPTIONS.map(([value, label]) => (
             <label key={value} className="flex items-center gap-2 text-sm">
@@ -90,7 +90,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
         </div>
 
         <section className="mt-4 space-y-2">
-          <h3 className="text-sm font-medium text-indigo-300">乐器技术（计入等级）</h3>
+          <h3 className="text-sm font-semibold text-emphasis">乐器技术（计入等级）</h3>
           <p className="text-xs text-slate-400">勾选你已稳定掌握的项目</p>
           {questions.map((label, index) => (
             <label key={label} className="flex items-center gap-2 text-sm">
@@ -115,7 +115,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-lg bg-indigo-600 px-4 py-2 hover:bg-indigo-500 disabled:opacity-50"
+            className="rounded-lg bg-accent-600 px-4 py-2 hover:bg-accent-500 disabled:opacity-50"
           >
             {loading ? '保存中…' : '保存'}
           </button>

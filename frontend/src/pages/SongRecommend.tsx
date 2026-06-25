@@ -39,7 +39,7 @@ export function SongRecommendPage() {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold">🎵 歌单推荐</h1>
-        <span className="rounded bg-amber-500/20 px-2 py-0.5 text-xs text-amber-300">即将上线</span>
+        <span className="rounded bg-slate-700 px-2 py-0.5 text-xs text-slate-300">即将上线</span>
       </div>
 
       {bands.length > 1 && (

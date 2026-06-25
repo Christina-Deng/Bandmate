@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { BandProvider } from './hooks/useBand';
+import { ThemeProvider } from './hooks/useTheme';
 import { BandHomePage } from './pages/BandHome';
 import { LoginPage } from './pages/Login';
 import { PracticePage } from './pages/Practice';
@@ -40,10 +41,12 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }

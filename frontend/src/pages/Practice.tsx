@@ -157,7 +157,7 @@ export function PracticePage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 text-sm text-slate-500">
+      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 text-sm text-slate-500">
         即将推出：练习邮件提醒 · 内置节拍器 · 调音器
       </div>
     </div>

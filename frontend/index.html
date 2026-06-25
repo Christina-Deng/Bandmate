@@ -1,10 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap"
+      rel="stylesheet"
+    />
+    <title>BandMate</title>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('bandmate-theme');
+          if (t === 'indigo' || t === 'rock' || t === 'light') {
+            document.documentElement.setAttribute('data-theme', t);
+          } else {
+            document.documentElement.setAttribute('data-theme', 'rock');
+          }
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'rock');
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

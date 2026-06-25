@@ -49,10 +49,10 @@ export function BandSection({ band, currentUserId, onRefresh, onLeave }: Props) 
   }
 
   return (
-    <section className="space-y-4 rounded-xl border border-slate-700 bg-slate-900/40 p-5">
+    <section className="space-y-4 rounded-xl border border-slate-700 bg-slate-900 p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold">{band.name}</h2>
+          <h2 className="font-display-heavy text-2xl">{band.name}</h2>
           {band.stylePreferences && band.stylePreferences.length > 0 && (
             <p className="text-sm text-slate-400">
               风格：{formatStylePreferences(band.stylePreferences)}
@@ -64,7 +64,7 @@ export function BandSection({ band, currentUserId, onRefresh, onLeave }: Props) 
             <button
               type="button"
               onClick={() => void copyInviteCode()}
-              className="text-indigo-300 hover:underline"
+              className="text-accent-500 hover:text-accent-400 hover:underline"
             >
               {copied ? '已复制' : '复制'}
             </button>
@@ -74,13 +74,13 @@ export function BandSection({ band, currentUserId, onRefresh, onLeave }: Props) 
           <button
             type="button"
             onClick={() => setShowQuestionnaire(true)}
-            className="rounded-lg border border-indigo-500 px-4 py-2 text-sm hover:bg-indigo-500/10"
+            className="rounded-lg border border-accent-500 px-4 py-2 text-sm hover:bg-accent-500/10"
           >
             完善我的资料
           </button>
           <Link
             to="/practice"
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium hover:bg-indigo-500"
+            className="rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium hover:bg-accent-500"
           >
             去打卡
           </Link>
@@ -92,7 +92,7 @@ export function BandSection({ band, currentUserId, onRefresh, onLeave }: Props) 
               setShowLeaveConfirm(true);
             }}
             disabled={leaving}
-            className="rounded-lg border border-red-500/50 px-4 py-2 text-sm text-red-300 hover:bg-red-500/10 disabled:opacity-50"
+            className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:border-accent-600 hover:text-accent-500 disabled:opacity-50"
           >
             退出乐队
           </button>
@@ -100,13 +100,13 @@ export function BandSection({ band, currentUserId, onRefresh, onLeave }: Props) 
       </div>
 
       {profileIncomplete && (
-        <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        <p className="rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-sm text-slate-300">
           请先完善资料，以便团队了解你的水平和练习情况。
         </p>
       )}
 
       {leaveError && !showLeaveConfirm && (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p className="rounded-lg border border-accent-600/40 bg-accent-600/10 px-4 py-3 text-sm text-red-400">
           {leaveError}
         </p>
       )}
