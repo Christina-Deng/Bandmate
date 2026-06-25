@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Instrument {
+  GUITAR
+  BASS
+  DRUMS
+  VOCALS
+  OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  displayName  String   @map("display_name")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  bandMembers  BandMember[]
+  practiceLogs PracticeLog[]
+
+  @@map("users")
+}
+
+model Band {
+  id              String   @id @default(cuid())
+  name            String
+  inviteCode      String   @unique @map("invite_code")
+  stylePreference String?  @map("style_preference")
+  createdById     String   @map("created_by_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  members      BandMember[]
+  practiceLogs PracticeLog[]
+
+  @@map("bands")
+}
+
+model BandMember {
+  id                   String     @id @default(cuid())
+  bandId               String     @map("band_id")
+  userId               String     @map("user_id")
+  instrument           Instrument
+  skillLevel           Int        @default(1) @map("skill_level")
+  questionnaireAnswers Json?      @map("questionnaire_answers")
+  joinedAt             DateTime   @default(now()) @map("joined_at")
+
+  band Band @relation(fields: [bandId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([bandId, userId])
+  @@map("band_members")
+}
+
+model PracticeLog {
+  id              String   @id @default(cuid())
+  bandId          String   @map("band_id")
+  userId          String   @map("user_id")
+  date            DateTime @db.Date
+  durationMinutes Int      @map("duration_minutes")
+  note            String?
+  audioUrl        String?  @map("audio_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  band Band @relation(fields: [bandId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([bandId, userId, date])
+  @@map("practice_logs")
+}
