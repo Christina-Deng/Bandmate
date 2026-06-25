@@ -7,6 +7,7 @@ import {
 import { CheckInForm } from '../components/practice/CheckInForm';
 import { PracticeCalendar } from '../components/practice/PracticeCalendar';
 import { TeamStatusPanel } from '../components/practice/TeamStatusPanel';
+import { useAuth } from '../hooks/useAuth';
 import { useBand } from '../hooks/useBand';
 import type { PracticeLog, TodayMemberStatus } from '../types/practice';
 
@@ -16,6 +17,7 @@ function currentMonth() {
 }
 
 export function PracticePage() {
+  const { user } = useAuth();
   const { band, loading } = useBand();
   const [month, setMonth] = useState(currentMonth());
   const [practices, setPractices] = useState<PracticeLog[]>([]);
@@ -71,7 +73,7 @@ export function PracticePage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <CheckInForm onSubmit={handleCheckIn} />
-        <TeamStatusPanel members={todayMembers} />
+        <TeamStatusPanel members={todayMembers} currentUserId={user?.id} />
       </div>
 
       <PracticeCalendar

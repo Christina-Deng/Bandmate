@@ -7,3 +7,10 @@ body {
   background: #0f172a;
   color: #e2e8f0;
 }
+
+.self-member-highlight {
+  border-color: rgb(129 140 248 / 0.85);
+  box-shadow:
+    0 0 0 1px rgb(129 140 248 / 0.55),
+    0 0 18px rgb(99 102 241 / 0.45);
+}

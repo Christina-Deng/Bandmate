@@ -12,6 +12,7 @@ enum Instrument {
   BASS
   DRUMS
   VOCALS
+  KEYBOARD
   OTHER
 }
 
@@ -32,7 +33,7 @@ model Band {
   id              String   @id @default(cuid())
   name            String
   inviteCode      String   @unique @map("invite_code")
-  stylePreference String?  @map("style_preference")
+  stylePreferences Json?    @map("style_preferences")
   createdById     String   @map("created_by_id")
   createdAt       DateTime @default(now()) @map("created_at")
 

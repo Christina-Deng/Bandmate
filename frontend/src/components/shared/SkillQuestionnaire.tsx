@@ -1,13 +1,11 @@
 import { useMemo, useState } from 'react';
-import type { Instrument, QuestionnaireAnswers, WeeklyPracticeHours } from '../../types/band';
-
-const instrumentQuestions: Record<Instrument, string[]> = {
-  GUITAR: ['开放和弦', '横按', '简单 solo', '视谱或跟谱'],
-  BASS: ['根音跟弹', '简单加花', '八度音阶', '视谱或跟谱'],
-  DRUMS: ['基本节奏型', '军鼓滚奏', '复合节奏', '踩镲+底鼓协调'],
-  VOCALS: ['跟调不跑音', '真假声切换', '气息控制', '简单和声'],
-  OTHER: ['基础演奏', '节奏稳定', '简单曲目', '视谱或跟谱'],
-};
+import {
+  INSTRUMENT_LABELS,
+  INSTRUMENT_SKILL_QUESTIONS,
+  PLAYING_EXPERIENCE_OPTIONS,
+} from '../../constants/music';
+import type { Instrument, PlayingExperience, QuestionnaireAnswers } from '../../types/band';
+import { StyleMultiSelect } from './StyleMultiSelect';
 
 interface Props {
   open: boolean;
@@ -17,12 +15,12 @@ interface Props {
 
 export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
   const [instrument, setInstrument] = useState<Instrument>('GUITAR');
-  const [weeklyPracticeHours, setWeeklyPracticeHours] = useState<WeeklyPracticeHours>('1-3');
-  const [stylePreference, setStylePreference] = useState('any');
-  const [skills, setSkills] = useState<boolean[]>([false, false, false, false]);
+  const [playingExperience, setPlayingExperience] = useState<PlayingExperience>('1-3');
+  const [stylePreferences, setStylePreferences] = useState<string[]>([]);
+  const [skills, setSkills] = useState<boolean[]>([false, false, false, false, false]);
   const [loading, setLoading] = useState(false);
 
-  const questions = useMemo(() => instrumentQuestions[instrument], [instrument]);
+  const questions = useMemo(() => INSTRUMENT_SKILL_QUESTIONS[instrument], [instrument]);
 
   if (!open) return null;
 
@@ -31,7 +29,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
     setLoading(true);
     try {
       await onSubmit(
-        { weeklyPracticeHours, stylePreference, instrumentSkills: skills },
+        { playingExperience, stylePreferences, instrumentSkills: skills },
         instrument,
       );
       onClose();
@@ -55,62 +53,50 @@ export function SkillQuestionnaire({ open, onClose, onSubmit }: Props) {
             value={instrument}
             onChange={(e) => {
               setInstrument(e.target.value as Instrument);
-              setSkills([false, false, false, false]);
+              setSkills([false, false, false, false, false]);
             }}
           >
-            <option value="GUITAR">吉他</option>
-            <option value="BASS">贝斯</option>
-            <option value="DRUMS">鼓</option>
-            <option value="VOCALS">主唱</option>
-            <option value="OTHER">其他</option>
+            {(Object.keys(INSTRUMENT_LABELS) as Instrument[]).map((value) => (
+              <option key={value} value={value}>
+                {INSTRUMENT_LABELS[value]}
+              </option>
+            ))}
           </select>
         </section>
 
         <section className="mt-4 space-y-2">
-          <h3 className="text-sm font-medium text-indigo-300">练习时长（计入等级）</h3>
-          <p className="text-xs text-slate-400">请选择你平均每周的练习时间</p>
-          {(
-            [
-              ['<1', '每周 < 1 小时'],
-              ['1-3', '每周 1–3 小时'],
-              ['3-5', '每周 3–5 小时'],
-              ['5+', '每周 5 小时以上'],
-            ] as const
-          ).map(([value, label]) => (
+          <h3 className="text-sm font-medium text-indigo-300">学习年限（计入等级）</h3>
+          <p className="text-xs text-slate-400">请选择你系统学习或持续演奏该乐器的时长</p>
+          {PLAYING_EXPERIENCE_OPTIONS.map(([value, label]) => (
             <label key={value} className="flex items-center gap-2 text-sm">
               <input
                 type="radio"
-                name="hours"
-                checked={weeklyPracticeHours === value}
-                onChange={() => setWeeklyPracticeHours(value)}
+                name="experience"
+                checked={playingExperience === value}
+                onChange={() => setPlayingExperience(value as PlayingExperience)}
               />
               {label}
             </label>
           ))}
         </section>
 
-        <section className="mt-4 space-y-2">
-          <h3 className="text-sm font-medium text-slate-300">风格偏好</h3>
-          <select
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
-            value={stylePreference}
-            onChange={(e) => setStylePreference(e.target.value)}
-          >
-            <option value="rock">摇滚</option>
-            <option value="pop">流行</option>
-            <option value="folk">民谣</option>
-            <option value="metal">金属</option>
-            <option value="any">不限</option>
-          </select>
-        </section>
+        <div className="mt-4">
+          <StyleMultiSelect
+            label="个人风格偏好"
+            hint="可多选，便于队友了解你想练什么风格"
+            selected={stylePreferences}
+            onChange={setStylePreferences}
+          />
+        </div>
 
         <section className="mt-4 space-y-2">
           <h3 className="text-sm font-medium text-indigo-300">乐器技术（计入等级）</h3>
+          <p className="text-xs text-slate-400">勾选你已稳定掌握的项目</p>
           {questions.map((label, index) => (
             <label key={label} className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
-                checked={skills[index]}
+                checked={skills[index] ?? false}
                 onChange={(e) => {
                   const next = [...skills];
                   next[index] = e.target.checked;

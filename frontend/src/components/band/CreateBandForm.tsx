@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useBand } from '../../hooks/useBand';
+import { StyleMultiSelect } from '../shared/StyleMultiSelect';
 
 export function CreateBandForm() {
   const { createBand } = useBand();
   const [name, setName] = useState('');
-  const [style, setStyle] = useState('');
+  const [stylePreferences, setStylePreferences] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +14,7 @@ export function CreateBandForm() {
     setLoading(true);
     setError('');
     try {
-      await createBand(name, style || undefined);
+      await createBand(name, stylePreferences.length > 0 ? stylePreferences : undefined);
     } catch {
       setError('创建失败，请重试');
     } finally {
@@ -31,11 +32,11 @@ export function CreateBandForm() {
         onChange={(e) => setName(e.target.value)}
         required
       />
-      <input
-        className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2"
-        placeholder="风格偏好（可选）"
-        value={style}
-        onChange={(e) => setStyle(e.target.value)}
+      <StyleMultiSelect
+        label="乐队风格偏好（可选）"
+        hint="可多选，帮助成员对齐排练方向"
+        selected={stylePreferences}
+        onChange={setStylePreferences}
       />
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button

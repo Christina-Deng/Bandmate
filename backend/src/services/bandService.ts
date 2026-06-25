@@ -20,7 +20,7 @@ async function getUserMembership(userId: string) {
 export async function createBand(input: {
   userId: string;
   name: string;
-  stylePreference?: string;
+  stylePreferences?: string[];
 }) {
   const existing = await getUserMembership(input.userId);
   if (existing) {
@@ -35,7 +35,10 @@ export async function createBand(input: {
   const band = await prisma.band.create({
     data: {
       name: input.name,
-      stylePreference: input.stylePreference,
+      stylePreferences:
+        input.stylePreferences && input.stylePreferences.length > 0
+          ? input.stylePreferences
+          : undefined,
       inviteCode,
       createdById: input.userId,
       members: {

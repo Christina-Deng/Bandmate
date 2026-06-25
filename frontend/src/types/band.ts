@@ -1,12 +1,25 @@
-export type Instrument = 'GUITAR' | 'BASS' | 'DRUMS' | 'VOCALS' | 'OTHER';
+export type PlayingExperience = '<1' | '1-3' | '3-5' | '5+';
 
-export type WeeklyPracticeHours = '<1' | '1-3' | '3-5' | '5+';
+/** @deprecated Legacy field; use playingExperience. */
+export type WeeklyPracticeHours = PlayingExperience;
 
 export interface QuestionnaireAnswers {
-  weeklyPracticeHours: WeeklyPracticeHours;
-  stylePreference: string;
+  playingExperience: PlayingExperience;
+  stylePreferences: string[];
   instrumentSkills: boolean[];
+  /** @deprecated Legacy field from earlier questionnaire versions. */
+  weeklyPracticeHours?: WeeklyPracticeHours;
+  /** @deprecated Legacy single-select style. */
+  stylePreference?: string;
 }
+
+export type Instrument =
+  | 'GUITAR'
+  | 'BASS'
+  | 'DRUMS'
+  | 'VOCALS'
+  | 'KEYBOARD'
+  | 'OTHER';
 
 export interface BandMember {
   id: string;
@@ -20,6 +33,6 @@ export interface Band {
   id: string;
   name: string;
   inviteCode: string;
-  stylePreference: string | null;
+  stylePreferences: string[] | null;
   members: BandMember[];
 }

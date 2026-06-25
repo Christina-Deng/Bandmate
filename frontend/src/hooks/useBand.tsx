@@ -7,7 +7,7 @@ interface BandContextValue {
   band: Band | null;
   loading: boolean;
   refresh: () => Promise<void>;
-  createBand: (name: string, stylePreference?: string) => Promise<void>;
+  createBand: (name: string, stylePreferences?: string[]) => Promise<void>;
   joinBand: (inviteCode: string) => Promise<void>;
 }
 
@@ -37,8 +37,8 @@ export function BandProvider({ children }: { children: ReactNode }) {
     void refresh();
   }, [refresh]);
 
-  const createBand = useCallback(async (name: string, stylePreference?: string) => {
-    const created = await bandsApi.createBand({ name, stylePreference });
+  const createBand = useCallback(async (name: string, stylePreferences?: string[]) => {
+    const created = await bandsApi.createBand({ name, stylePreferences });
     setBand(created);
   }, []);
 

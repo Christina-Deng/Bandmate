@@ -5,6 +5,7 @@ import { CreateBandForm } from '../components/band/CreateBandForm';
 import { JoinBandForm } from '../components/band/JoinBandForm';
 import { MemberCard } from '../components/band/MemberCard';
 import { SkillQuestionnaire } from '../components/shared/SkillQuestionnaire';
+import { formatStylePreferences } from '../constants/music';
 import { useAuth } from '../hooks/useAuth';
 import { useBand } from '../hooks/useBand';
 import type { Instrument, QuestionnaireAnswers } from '../types/band';
@@ -46,8 +47,10 @@ export function BandHomePage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">{band.name}</h1>
-          {band.stylePreference && (
-            <p className="text-sm text-slate-400">风格：{band.stylePreference}</p>
+          {band.stylePreferences && band.stylePreferences.length > 0 && (
+            <p className="text-sm text-slate-400">
+              风格：{formatStylePreferences(band.stylePreferences)}
+            </p>
           )}
           <div className="mt-2 flex items-center gap-2 text-sm">
             <span className="text-slate-400">邀请码：</span>
@@ -86,7 +89,11 @@ export function BandHomePage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {band.members.map((member) => (
-          <MemberCard key={member.id} member={member} />
+          <MemberCard
+            key={member.id}
+            member={member}
+            isSelf={member.user.id === user?.id}
+          />
         ))}
       </div>
 

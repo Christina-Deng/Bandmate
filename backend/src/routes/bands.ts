@@ -6,7 +6,7 @@ import type { QuestionnaireAnswers } from '../services/skillAssessment.js';
 
 export async function registerBandRoutes(app: FastifyInstance) {
   app.post('/bands', { preHandler: authenticate }, async (request, reply) => {
-    const body = request.body as { name?: string; stylePreference?: string };
+    const body = request.body as { name?: string; stylePreferences?: string[] };
     if (!body.name) {
       return reply.status(400).send({
         error: { code: 'VALIDATION_ERROR', message: '请填写乐队名称' },
@@ -17,7 +17,7 @@ export async function registerBandRoutes(app: FastifyInstance) {
       const band = await bandService.createBand({
         userId: request.userId!,
         name: body.name,
-        stylePreference: body.stylePreference,
+        stylePreferences: body.stylePreferences,
       });
       return reply.status(201).send({ band });
     } catch (error) {

@@ -1,7 +1,7 @@
 import { api } from './client';
 import type { Band, Instrument, QuestionnaireAnswers } from '../types/band';
 
-export async function createBand(input: { name: string; stylePreference?: string }) {
+export async function createBand(input: { name: string; stylePreferences?: string[] }) {
   const { data } = await api.post<{ band: Band }>('/bands', input);
   return data.band;
 }
