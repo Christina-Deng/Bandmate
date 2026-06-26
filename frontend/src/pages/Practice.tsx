@@ -13,6 +13,7 @@ import { PersonalStatsPanel } from '../components/practice/PersonalStatsPanel';
 import { PracticeCalendar } from '../components/practice/PracticeCalendar';
 import { TeamStatsPanel } from '../components/practice/TeamStatsPanel';
 import { TeamStatusPanel } from '../components/practice/TeamStatusPanel';
+import { PracticeToolsLayout } from '../components/practice/tools/PracticeToolsLayout';
 import { createToast, ToastStack, type ToastMessage } from '../components/shared/ToastStack';
 import { useAuth } from '../hooks/useAuth';
 import { useBand } from '../hooks/useBand';
@@ -189,6 +190,7 @@ export function PracticePage() {
   }
 
   return (
+    <PracticeToolsLayout>
     <div className="space-y-6">
       <ToastStack toasts={toasts} onDismiss={dismissToast} />
 
@@ -277,8 +279,9 @@ export function PracticePage() {
 
       <div className="poster-card rounded-xl border-dashed p-4 text-sm text-slate-500">
         <span className="rock-tag mr-2">SOON</span>
-        即将推出：练习邮件提醒 · 内置节拍器 · 调音器
+        即将推出：练习邮件提醒
       </div>
     </div>
+    </PracticeToolsLayout>
   );
 }

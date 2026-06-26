@@ -796,3 +796,166 @@ textarea:focus-visible {
   background: color-mix(in srgb, var(--theme-slate-800) 80%, var(--theme-accent-600)) !important;
   color: var(--theme-emphasis) !important;
 }
+
+/* Practice page — metronome / tuner sidebar */
+.practice-tools-layout {
+  position: relative;
+}
+
+@media (min-width: 1280px) {
+  .practice-tools-main {
+    padding-right: 3.75rem;
+  }
+}
+
+.practice-tools-rail {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: 40;
+  transform: translateY(-50%);
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  border-left: 1px solid color-mix(in srgb, var(--theme-slate-700) 88%, var(--theme-accent-600));
+  background: color-mix(in srgb, var(--theme-slate-900) 96%, transparent);
+  box-shadow: -8px 0 24px color-mix(in srgb, #000 10%, transparent);
+}
+
+.practice-tools-rail-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 3.25rem;
+  padding: 0.55rem 0.35rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  color: var(--theme-slate-400);
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.practice-tools-rail-btn:hover {
+  color: var(--theme-emphasis);
+  border-color: color-mix(in srgb, var(--theme-slate-700) 80%, var(--theme-accent-600));
+  background: color-mix(in srgb, var(--theme-slate-800) 70%, transparent);
+}
+
+.practice-tools-rail-btn-active {
+  color: var(--theme-emphasis);
+  border-color: var(--theme-accent-600);
+  background: color-mix(in srgb, var(--theme-accent-600) 12%, var(--theme-slate-900));
+}
+
+.practice-tools-rail-icon {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+
+.practice-tools-rail-label {
+  font-size: 0.625rem;
+  line-height: 1.1;
+}
+
+.practice-tools-panel {
+  position: fixed;
+  right: 3.75rem;
+  top: 5.5rem;
+  bottom: 2rem;
+  z-index: 39;
+  width: min(20rem, calc(100vw - 5rem));
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(1.25rem);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.practice-tools-panel-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.practice-tools-panel-inner {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.practice-tools-mobile-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid color-mix(in srgb, var(--theme-slate-700) 88%, var(--theme-accent-600));
+  background: color-mix(in srgb, var(--theme-slate-900) 97%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+@media (min-width: 1280px) {
+  .practice-tools-mobile-bar {
+    display: none;
+  }
+}
+
+.practice-tools-mobile-btn {
+  flex: 1;
+  border-radius: 0.5rem;
+  border: 1px solid var(--theme-slate-700);
+  padding: 0.65rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--theme-slate-300);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.practice-tools-mobile-btn-active,
+.practice-tools-mobile-btn:hover {
+  border-color: var(--theme-accent-600);
+  background: color-mix(in srgb, var(--theme-accent-600) 10%, var(--theme-slate-900));
+  color: var(--theme-emphasis);
+}
+
+@media (max-width: 1279px) {
+  .practice-tools-main {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+.practice-tools-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+}
+
+.practice-tools-mobile-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: color-mix(in srgb, #000 45%, transparent);
+}
+
+.practice-tools-mobile-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: min(85vh, 36rem);
+  overflow-y: auto;
+  border-radius: 1rem 1rem 0 0;
+  padding: 1.25rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
