@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { ThemePicker } from './ThemePicker';
 
 export function AppearanceMenu() {
+  const { user } = useAuth();
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -61,10 +63,14 @@ export function AppearanceMenu() {
                 <ThemePicker
                 theme={theme}
                 onSelect={(next) => {
-                  setTheme(next);
+                  setTheme(next, { skipAccountSync: !user });
                   setOpen(false);
                 }}
-                hint="选择配色方案，会同步到账户并在本机保存"
+                hint={
+                  user
+                    ? '保存在账户中，登录后各设备同步'
+                    : '预览外观；登录后使用账户偏好，首次登录沿用当前选择'
+                }
                 />
               </div>
             </div>

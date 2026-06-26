@@ -149,7 +149,7 @@ export function SettingsPage() {
         <ThemePicker
           theme={theme}
           onSelect={setTheme}
-          hint="偏好会同步到账户，并在本机保存"
+          hint="保存在账户中，登录后各设备同步"
         />
       </section>
 

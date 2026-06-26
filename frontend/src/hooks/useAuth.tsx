@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -28,6 +29,8 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const userRef = useRef<AuthUser | null>(null);
+  userRef.current = user;
 
   const refresh = useCallback(async () => {
     try {
@@ -46,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     registerThemeAccountSync(async (theme) => {
+      if (!userRef.current) return;
       try {
         const updated = await authApi.updateMe({ themePreference: theme });
         setUser(updated);
