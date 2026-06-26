@@ -7,6 +7,7 @@ interface Props {
   label: string;
   hint?: string;
   multiple?: boolean;
+  disabledIds?: string[];
 }
 
 export function BandPicker({
@@ -16,8 +17,10 @@ export function BandPicker({
   label,
   hint,
   multiple = false,
+  disabledIds = [],
 }: Props) {
   function toggle(id: string) {
+    if (disabledIds.includes(id)) return;
     if (multiple) {
       if (selectedIds.includes(id)) {
         onChange(selectedIds.filter((s) => s !== id));
@@ -38,18 +41,23 @@ export function BandPicker({
       <div className="flex flex-wrap gap-2">
         {bands.map((band) => {
           const active = selectedIds.includes(band.id);
+          const disabled = disabledIds.includes(band.id);
           return (
             <button
               key={band.id}
               type="button"
+              disabled={disabled}
               onClick={() => toggle(band.id)}
               className={`rounded-full border px-3 py-1 font-display-heavy text-sm tracking-wide transition-colors ${
-                active
-                  ? 'border-accent-600 bg-accent-600 text-white'
-                  : 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+                disabled
+                  ? 'cursor-not-allowed border-slate-700 bg-slate-800 text-slate-500 opacity-60'
+                  : active
+                    ? 'border-accent-600 bg-accent-600 text-white'
+                    : 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-200'
               }`}
             >
               {band.name}
+              {disabled && <span className="ml-1 text-[10px] font-sans font-normal">已打卡</span>}
             </button>
           );
         })}

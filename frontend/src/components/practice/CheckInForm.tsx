@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Band } from '../../types/band';
 import { BandPicker } from '../band/BandPicker';
 
 interface Props {
   bands: Band[];
+  checkedInBandIds: string[];
   onSubmit: (input: {
     bandIds: string[];
     durationMinutes: number;
@@ -12,7 +13,7 @@ interface Props {
   }) => Promise<void>;
 }
 
-export function CheckInForm({ bands, onSubmit }: Props) {
+export function CheckInForm({ bands, checkedInBandIds, onSubmit }: Props) {
   const [selectedBandIds, setSelectedBandIds] = useState<string[]>([]);
   const [durationMinutes, setDurationMinutes] = useState(30);
   const [note, setNote] = useState('');
@@ -20,10 +21,22 @@ export function CheckInForm({ bands, onSubmit }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const checkedInBandNames = useMemo(
+    () =>
+      bands.filter((band) => checkedInBandIds.includes(band.id)).map((band) => band.name),
+    [bands, checkedInBandIds],
+  );
+
+  const allCheckedIn = bands.length > 0 && checkedInBandIds.length === bands.length;
+
+  useEffect(() => {
+    setSelectedBandIds((prev) => prev.filter((id) => !checkedInBandIds.includes(id)));
+  }, [checkedInBandIds]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (selectedBandIds.length === 0) {
-      setError('请至少选择一个乐队');
+      setError(allCheckedIn ? '今日所有乐队均已打卡' : '请至少选择一个乐队');
       return;
     }
     setLoading(true);
@@ -37,6 +50,7 @@ export function CheckInForm({ bands, onSubmit }: Props) {
       });
       setNote('');
       setAudio(undefined);
+      setSelectedBandIds([]);
     } catch {
       setError('打卡失败，部分乐队可能今天已经打卡过了');
     } finally {
@@ -48,12 +62,23 @@ export function CheckInForm({ bands, onSubmit }: Props) {
     <form onSubmit={handleSubmit} className="space-y-3 rounded-xl border border-slate-700 bg-slate-900 p-4">
       <h3 className="font-semibold">今日打卡</h3>
 
+      {checkedInBandNames.length > 0 && (
+        <p className="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300">
+          今日已在 {checkedInBandNames.join('、')} 打卡
+        </p>
+      )}
+
       <BandPicker
         bands={bands}
         selectedIds={selectedBandIds}
         onChange={setSelectedBandIds}
+        disabledIds={checkedInBandIds}
         label="选择乐队"
-        hint="可多选，为每个选中的乐队分别打卡"
+        hint={
+          allCheckedIn
+            ? '今日所有乐队均已打卡'
+            : '可多选，为每个选中的乐队分别打卡'
+        }
         multiple
       />
 
@@ -66,6 +91,7 @@ export function CheckInForm({ bands, onSubmit }: Props) {
           value={durationMinutes}
           onChange={(e) => setDurationMinutes(Number(e.target.value))}
           required
+          disabled={allCheckedIn}
         />
       </label>
       <label className="block text-sm">
@@ -75,6 +101,7 @@ export function CheckInForm({ bands, onSubmit }: Props) {
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={2}
+          disabled={allCheckedIn}
         />
       </label>
       <label className="block text-sm">
@@ -84,15 +111,16 @@ export function CheckInForm({ bands, onSubmit }: Props) {
           accept=".mp3,.wav,audio/mpeg,audio/wav"
           className="mt-1 block w-full text-sm"
           onChange={(e) => setAudio(e.target.files?.[0])}
+          disabled={allCheckedIn}
         />
       </label>
       {error && <p className="text-sm text-red-400">{error}</p>}
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || allCheckedIn}
         className="rounded-lg bg-accent-600 px-4 py-2 font-medium hover:bg-accent-500 disabled:opacity-50"
       >
-        {loading ? '提交中…' : '提交打卡'}
+        {loading ? '提交中…' : allCheckedIn ? '今日已全部打卡' : '提交打卡'}
       </button>
     </form>
   );

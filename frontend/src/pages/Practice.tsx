@@ -25,6 +25,7 @@ export function PracticePage() {
   const [month, setMonth] = useState(currentMonth());
   const [practices, setPractices] = useState<PracticeLog[]>([]);
   const [todayMembers, setTodayMembers] = useState<TodayMemberStatus[]>([]);
+  const [checkedInBandIds, setCheckedInBandIds] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,6 +40,22 @@ export function PracticePage() {
 
   const viewBand = bands.find((b) => b.id === viewBandId);
 
+  const refreshCheckInStatus = useCallback(async () => {
+    if (!user || bands.length === 0) {
+      setCheckedInBandIds([]);
+      return;
+    }
+
+    const results = await Promise.all(
+      bands.map(async (band) => {
+        const members = await getTodayStatus(band.id);
+        const me = members.find((member) => member.userId === user.id);
+        return me?.checkedIn ? band.id : null;
+      }),
+    );
+    setCheckedInBandIds(results.filter((id): id is string => id !== null));
+  }, [bands, user]);
+
   const refresh = useCallback(async () => {
     if (!viewBandId) return;
     const [monthData, todayData] = await Promise.all([
@@ -49,9 +66,13 @@ export function PracticePage() {
     setTodayMembers(todayData);
   }, [viewBandId, month]);
 
+  const refreshAll = useCallback(async () => {
+    await Promise.all([refresh(), refreshCheckInStatus()]);
+  }, [refresh, refreshCheckInStatus]);
+
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    void refreshAll();
+  }, [refreshAll]);
 
   const selectedDayLogs = useMemo(() => {
     if (!selectedDate) return [];
@@ -91,7 +112,7 @@ export function PracticePage() {
     if (errors.length === input.bandIds.length) {
       throw new Error('all failed');
     }
-    await refresh();
+    await refreshAll();
     if (errors.length > 0) {
       throw new Error(`partial: ${errors.join('、')}`);
     }
@@ -107,7 +128,7 @@ export function PracticePage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <CheckInForm bands={bands} onSubmit={handleCheckIn} />
+        <CheckInForm bands={bands} checkedInBandIds={checkedInBandIds} onSubmit={handleCheckIn} />
 
         <div className="space-y-3">
           <BandPicker
