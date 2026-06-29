@@ -41,6 +41,8 @@
   --theme-slate-500: #737373;
   --theme-slate-400: #a3a3a3;
   --theme-slate-300: #d4d4d4;
+  --theme-hint-warn: #fcd34d;
+  --theme-hint-program: #7dd3fc;
 }
 
 [data-theme="rock"] {
@@ -63,6 +65,8 @@
   --theme-slate-500: #737373;
   --theme-slate-400: #a3a3a3;
   --theme-slate-300: #d4d4d4;
+  --theme-hint-warn: #fcd34d;
+  --theme-hint-program: #7dd3fc;
 }
 
 [data-theme="indigo"] {
@@ -85,6 +89,8 @@
   --theme-slate-500: #71717a;
   --theme-slate-400: #a1a1aa;
   --theme-slate-300: #d4d4d8;
+  --theme-hint-warn: #fcd34d;
+  --theme-hint-program: #7dd3fc;
 }
 
 [data-theme="paper"] {
@@ -107,6 +113,8 @@
   --theme-slate-500: #78716c;
   --theme-slate-400: #57534e;
   --theme-slate-300: #292524;
+  --theme-hint-warn: #92400e;
+  --theme-hint-program: #075985;
 }
 
 [data-theme="light"] {
@@ -129,6 +137,8 @@
   --theme-slate-500: #64748b;
   --theme-slate-400: #475569;
   --theme-slate-300: #334155;
+  --theme-hint-warn: #b45309;
+  --theme-hint-program: #0369a1;
 }
 
 body {
@@ -699,6 +709,16 @@ textarea:focus-visible {
   color: var(--theme-slate-400);
   transform: rotate(-4deg);
   vertical-align: middle;
+}
+
+.recommend-hint-warn {
+  color: var(--theme-hint-warn);
+  font-weight: 500;
+}
+
+.recommend-hint-program {
+  color: var(--theme-hint-program);
+  font-weight: 500;
 }
 
 .auth-watermark {

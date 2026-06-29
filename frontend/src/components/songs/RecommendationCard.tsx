@@ -22,12 +22,12 @@ export function RecommendationCard({ song }: { song: RecommendedSong }) {
         </div>
       </dl>
       {song.arrangementHints.length > 0 && (
-        <p className="text-xs text-amber-200/90">
+        <p className="recommend-hint-warn text-xs">
           编制提示：{song.arrangementHints.join('；')}
         </p>
       )}
       {song.programHints.length > 0 && (
-        <p className="text-xs text-sky-200/90">Program 建议：{song.programHints.join('；')}</p>
+        <p className="recommend-hint-program text-xs">Program 建议：{song.programHints.join('；')}</p>
       )}
       <a
         href={song.listenUrl}
