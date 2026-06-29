@@ -1,3 +1,3 @@
 export const FEATURES = {
-  SONG_RECOMMENDATION: false,
+  SONG_RECOMMENDATION: true,
 } as const;
