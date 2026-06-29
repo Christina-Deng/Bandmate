@@ -19,7 +19,8 @@
       "type": "string",
       "enum": [
         "rock", "pop", "folk", "metal", "punk", "indie", "jazz", "blues",
-        "funk", "rnb", "acg", "hiphop", "electronic", "postrock", "reggae",
+        "funk", "rnb", "acg", "electronic", "postrock", "postpunk", "hardcore",
+        "emo", "grunge", "mathrock", "prog", "shoegaze", "deathcore", "reggae",
         "country", "classical", "world"
       ]
     },

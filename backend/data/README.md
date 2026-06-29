@@ -4,12 +4,14 @@ BandMate 自有曲库，供**规则引擎筛候选** + **AI 写推荐语**。尚
 
 ## 文件
 
-| 文件 | 说明 |
-|------|------|
-| `songs.seed.json` | 曲库数据（v2） |
-| `songs.seed.schema.json` | JSON Schema 校验 |
-| `band-profiles.sample.json` | 预览用虚构乐队 |
-| `../src/types/seedSong.ts` | TypeScript 类型（实现时复用） |
+
+| 文件                          | 说明                   |
+| --------------------------- | -------------------- |
+| `songs.seed.json`           | 曲库数据（v2）             |
+| `songs.seed.schema.json`    | JSON Schema 校验       |
+| `band-profiles.sample.json` | 预览用虚构乐队              |
+| `../src/types/seedSong.ts`  | TypeScript 类型（实现时复用） |
+
 
 ## 命令
 
@@ -38,15 +40,17 @@ npm run preview:recommendations -- band-newbie-rock
 }
 ```
 
-| 字段 | 取值 | 含义 |
-|------|------|------|
-| `vocals` | `required` / `optional` / `instrumental_ok` | 是否必须主唱 |
-| `guitars.count` | `0` / `1` / `2` | 吉他数量 |
-| `guitars.lead` | `none` / `optional` / `required` | 主音吉他 |
-| `guitars.rhythm` | `none` / `optional` / `required` | 节奏吉他 |
-| `bass` | `required` / `optional` / `none` | 贝斯 |
-| `drums` | `required` / `optional` / `program_ok` | 鼓（可接受 program） |
-| `keyboard` | `none` / `optional_pad` / `important` / `required` | 键盘 |
+
+| 字段               | 取值                                                 | 含义             |
+| ---------------- | -------------------------------------------------- | -------------- |
+| `vocals`         | `required` / `optional` / `instrumental_ok`        | 是否必须主唱         |
+| `guitars.count`  | `0` / `1` / `2`                                    | 吉他数量           |
+| `guitars.lead`   | `none` / `optional` / `required`                   | 主音吉他           |
+| `guitars.rhythm` | `none` / `optional` / `required`                   | 节奏吉他           |
+| `bass`           | `required` / `optional` / `none`                   | 贝斯             |
+| `drums`          | `required` / `optional` / `program_ok`             | 鼓（可接受 program） |
+| `keyboard`       | `none` / `optional_pad` / `important` / `required` | 键盘             |
+
 
 ### 2. `parts` — 各声部最低 skill（1–5）
 
@@ -81,12 +85,14 @@ npm run preview:recommendations -- band-newbie-rock
 }
 ```
 
-| 键 | 常用值 | 展示文案 |
-|----|--------|----------|
+
+| 键                   | 常用值                                             | 展示文案           |
+| ------------------- | ----------------------------------------------- | -------------- |
 | `missingLeadGuitar` | `program_lead` / `combine_into_rhythm` / `omit` | 可用 Program 补主音 |
-| `missingDrums` | `program_drums` / `cajon` / `omit` | 可用鼓机 |
-| `missingKeyboard` | `program_pad` / `omit` | 可用 Pad 铺底 |
-| `missingBass` | `program_bass` / `keyboard_bass` / `omit` | 可省略或用 program |
+| `missingDrums`      | `program_drums` / `cajon` / `omit`              | 可用鼓机           |
+| `missingKeyboard`   | `program_pad` / `omit`                          | 可用 Pad 铺底      |
+| `missingBass`       | `program_bass` / `keyboard_bass` / `omit`       | 可省略或用 program  |
+
 
 完整枚举见 `seedSong.ts` 与 `FALLBACK_LABELS`。
 
@@ -142,12 +148,14 @@ Hotel California — Eagles
 
 ## 运行时分工（已定）
 
-| 层 | 职责 |
-|----|------|
+
+| 层              | 职责                                          |
+| -------------- | ------------------------------------------- |
 | **Seed（你们拥有）** | 歌名、风格、`arrangement` / `parts` / `fallbacks` |
-| **规则引擎** | 风格匹配 + skill 够 + 缺声部时有合法 fallback |
-| **AI** | 从候选 id 里挑 5–8 首，写个性化推荐语 |
-| **前端** | 卡片展示 + 编制/Program 提示 + 外链搜索 |
+| **规则引擎**       | 风格匹配 + skill 够 + 缺声部时有合法 fallback           |
+| **AI**         | 从候选 id 里挑 5–8 首，写个性化推荐语                     |
+| **前端**         | 卡片展示 + 编制/Program 提示 + 外链搜索                 |
+
 
 ---
 

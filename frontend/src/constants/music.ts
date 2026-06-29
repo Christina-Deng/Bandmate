@@ -1,28 +1,40 @@
 import type { Instrument } from '../types/band';
 
-/** Curated genres common in band / rehearsal contexts (CN + international). */
+/** Curated genres for band / rehearsal contexts (CN + international). */
 export const MUSIC_STYLES = [
   { id: 'rock', label: '摇滚' },
   { id: 'pop', label: '流行' },
-  { id: 'folk', label: '民谣' },
-  { id: 'metal', label: '金属' },
-  { id: 'punk', label: '朋克' },
   { id: 'indie', label: '独立' },
-  { id: 'jazz', label: '爵士' },
+  { id: 'folk', label: '民谣' },
+  { id: 'punk', label: '朋克' },
+  { id: 'postpunk', label: '后朋' },
+  { id: 'hardcore', label: '硬核' },
+  { id: 'emo', label: 'Emo' },
+  { id: 'grunge', label: 'Grunge' },
+  { id: 'mathrock', label: '数摇' },
+  { id: 'postrock', label: '后摇' },
+  { id: 'prog', label: '前卫摇滚' },
+  { id: 'shoegaze', label: '自赏' },
+  { id: 'metal', label: '金属' },
+  { id: 'deathcore', label: '死旋 / 死核' },
   { id: 'blues', label: '蓝调' },
   { id: 'funk', label: '放克' },
+  { id: 'jazz', label: '爵士' },
   { id: 'rnb', label: 'R&B / Soul' },
-  { id: 'acg', label: 'ACG（动漫/游戏）' },
-  { id: 'hiphop', label: '嘻哈 / 说唱' },
-  { id: 'electronic', label: '电子' },
-  { id: 'postrock', label: '后摇' },
   { id: 'reggae', label: '雷鬼' },
+  { id: 'acg', label: 'ACG（动漫/游戏）' },
+  { id: 'electronic', label: '电子' },
   { id: 'country', label: '乡村' },
   { id: 'classical', label: '古典 / 融合' },
   { id: 'world', label: '世界音乐' },
 ] as const;
 
 export type MusicStyleId = (typeof MUSIC_STYLES)[number]['id'];
+
+/** Retired ids still stored on older band/member profiles. */
+const LEGACY_STYLE_LABELS: Record<string, string> = {
+  hiphop: '嘻哈 / 说唱',
+};
 
 const styleLabelMap = Object.fromEntries(MUSIC_STYLES.map((s) => [s.id, s.label])) as Record<
   MusicStyleId,
@@ -31,7 +43,7 @@ const styleLabelMap = Object.fromEntries(MUSIC_STYLES.map((s) => [s.id, s.label]
 
 export function formatStylePreferences(ids: string[] | null | undefined): string {
   if (!ids?.length) return '';
-  return ids.map((id) => styleLabelMap[id as MusicStyleId] ?? id).join('、');
+  return ids.map((id) => styleLabelMap[id as MusicStyleId] ?? LEGACY_STYLE_LABELS[id] ?? id).join('、');
 }
 
 export const INSTRUMENT_LABELS: Record<Instrument, string> = {

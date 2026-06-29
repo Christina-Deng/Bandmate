@@ -2879,44 +2879,6 @@
       }
     },
     {
-      "id": "song-063",
-      "title": "Lose Yourself",
-      "artist": "Eminem",
-      "style": "hiphop",
-      "bpm": 87,
-      "notes": "说唱为主，需要主唱能 rap",
-      "arrangement": {
-        "vocals": "required",
-        "guitars": {
-          "count": 0,
-          "lead": "none",
-          "rhythm": "none"
-        },
-        "bass": "none",
-        "drums": "program_ok",
-        "keyboard": "optional_pad"
-      },
-      "parts": {
-        "vocals": {
-          "minLevel": 4
-        },
-        "drums": {
-          "minLevel": 2
-        },
-        "keyboard": {
-          "minLevel": 2
-        }
-      },
-      "fallbacks": {
-        "missingLeadGuitar": "not_applicable",
-        "missingRhythmGuitar": "not_applicable",
-        "missingBass": "program_bass",
-        "missingDrums": "program_drums",
-        "missingKeyboard": "program_pad",
-        "missingVocals": "not_applicable"
-      }
-    },
-    {
       "id": "song-064",
       "title": "Stairway to Heaven",
       "artist": "Led Zeppelin",
