@@ -111,8 +111,8 @@ export function SongRecommendPage() {
           }`}
           title={
             aiAvailable ?
-              '勾选后使用 DeepSeek 生成个性化推荐理由'
-            : '服务端未配置 DEEPSEEK_API_KEY，仅使用规则推荐'
+              '勾选后使用 AI 生成个性化推荐理由'
+            : '服务端未配置 LLM_API_KEY，仅使用规则推荐'
           }
         >
           <input

@@ -1,9 +1,26 @@
-/** DeepSeek (OpenAI-compatible) — set DEEPSEEK_API_KEY in backend/.env */
-export function isAiRecommendationAvailable(): boolean {
-  return Boolean(process.env.DEEPSEEK_API_KEY?.trim());
+/**
+ * OpenAI-compatible LLM（智谱 / DeepSeek 等）
+ * 在 backend/.env 配置 LLM_API_KEY、LLM_BASE_URL、LLM_MODEL
+ * 仍兼容旧变量 DEEPSEEK_*
+ */
+function envFirst(...keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = process.env[key]?.trim();
+    if (value) return value;
+  }
+  return undefined;
 }
 
-export const DEEPSEEK_BASE_URL =
-  process.env.DEEPSEEK_BASE_URL?.trim() || 'https://api.deepseek.com';
+export function getLlmApiKey(): string | undefined {
+  return envFirst('LLM_API_KEY', 'DEEPSEEK_API_KEY');
+}
 
-export const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL?.trim() || 'deepseek-chat';
+export function isAiRecommendationAvailable(): boolean {
+  return Boolean(getLlmApiKey());
+}
+
+export const LLM_BASE_URL =
+  envFirst('LLM_BASE_URL', 'DEEPSEEK_BASE_URL') || 'https://open.bigmodel.cn/api/paas/v4';
+
+export const LLM_MODEL =
+  envFirst('LLM_MODEL', 'DEEPSEEK_MODEL') || 'glm-4-flash';
