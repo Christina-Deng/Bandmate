@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-06-26",
+  "generatedAt": "2026-06-29",
   "description": "Phase 2 曲库 seed v2：编制 (arrangement)、分声部难度 (parts)、缺人方案 (fallbacks)。AI 写推荐语，规则引擎筛候选。",
   "songs": [
     {
@@ -2974,6 +2974,528 @@
       "fallbacks": {
         "missingLeadGuitar": "program_lead",
         "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "program_pad",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-066",
+      "title": "Don't Look Back in Anger",
+      "artist": "Oasis",
+      "style": "rock",
+      "styles": [
+        "indie",
+        "pop"
+      ],
+      "bpm": 87,
+      "notes": "英伦摇滚入门，副歌和弦经典",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "program_ok",
+        "keyboard": "optional_pad"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 2
+        },
+        "rhythmGuitar": {
+          "minLevel": 2
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 2
+        },
+        "keyboard": {
+          "minLevel": 2
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "combine_into_rhythm",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "omit",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-067",
+      "title": "Back In Black",
+      "artist": "AC/DC",
+      "style": "rock",
+      "styles": [
+        "metal"
+      ],
+      "bpm": 91,
+      "notes": "硬摇滚 riff 驱动，节奏简单有力",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 2,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "none"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 3
+        },
+        "leadGuitar": {
+          "minLevel": 3
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 3
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "program_lead",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "not_applicable",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-068",
+      "title": "Livin' on a Prayer",
+      "artist": "Bon Jovi",
+      "style": "rock",
+      "styles": [
+        "pop",
+        "metal"
+      ],
+      "bpm": 123,
+      "notes": "80年代摇滚经典，talk box 段可省略",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "important"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 2
+        },
+        "leadGuitar": {
+          "minLevel": 3
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 3
+        },
+        "keyboard": {
+          "minLevel": 3
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "combine_into_rhythm",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "program_pad",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-069",
+      "title": "Alive",
+      "artist": "Pearl Jam",
+      "style": "rock",
+      "styles": [
+        "grunge",
+        "indie"
+      ],
+      "bpm": 76,
+      "notes": "Grunge 代表，动态从安静到爆发",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 2,
+          "lead": "required",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "none"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 3
+        },
+        "leadGuitar": {
+          "minLevel": 3
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 3
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "program_lead",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "not_applicable",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-070",
+      "title": "不再犹豫",
+      "artist": "Beyond",
+      "style": "rock",
+      "styles": [
+        "pop"
+      ],
+      "bpm": 120,
+      "notes": "粤语摇滚高频曲目，节奏明快",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "optional_pad"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 3
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 2
+        },
+        "keyboard": {
+          "minLevel": 2
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "combine_into_rhythm",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "omit",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-071",
+      "title": "长城",
+      "artist": "Beyond",
+      "style": "rock",
+      "bpm": 72,
+      "notes": "慢板摇滚，主唱情感表达为主",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "optional",
+        "drums": "program_ok",
+        "keyboard": "optional_pad"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 2
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 2
+        },
+        "keyboard": {
+          "minLevel": 2
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "combine_into_rhythm",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "omit",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "omit",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-072",
+      "title": "晚安北京",
+      "artist": "汪峰",
+      "style": "rock",
+      "styles": [
+        "indie"
+      ],
+      "bpm": 128,
+      "notes": "中文摇滚现场常选，能量高",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 2,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "optional_pad"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 3
+        },
+        "leadGuitar": {
+          "minLevel": 3
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 3
+        },
+        "keyboard": {
+          "minLevel": 2
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "program_lead",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "omit",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-073",
+      "title": "We Will Rock You",
+      "artist": "Queen",
+      "style": "rock",
+      "styles": [
+        "pop"
+      ],
+      "bpm": 81,
+      "notes": "极简 stomp 节奏，新手乐队暖场利器",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "none",
+          "rhythm": "optional"
+        },
+        "bass": "optional",
+        "drums": "optional",
+        "keyboard": "none"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 2
+        },
+        "rhythmGuitar": {
+          "minLevel": 2
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 2
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "not_applicable",
+        "missingRhythmGuitar": "omit",
+        "missingBass": "omit",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "not_applicable",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-074",
+      "title": "Highway to Hell",
+      "artist": "AC/DC",
+      "style": "rock",
+      "styles": [
+        "metal"
+      ],
+      "bpm": 116,
+      "notes": "硬摇滚， riff 重复多适合排练",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 2,
+          "lead": "optional",
+          "rhythm": "required"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "none"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 3
+        },
+        "leadGuitar": {
+          "minLevel": 3
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 3
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "program_lead",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "program_bass",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "not_applicable",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-075",
+      "title": "北京北京",
+      "artist": "汪峰",
+      "style": "rock",
+      "styles": [
+        "folk",
+        "indie"
+      ],
+      "bpm": 76,
+      "notes": "木吉他+乐队编制均可，副歌爆发",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "none",
+          "rhythm": "required"
+        },
+        "bass": "optional",
+        "drums": "program_ok",
+        "keyboard": "optional_pad"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 2
+        },
+        "bass": {
+          "minLevel": 2
+        },
+        "drums": {
+          "minLevel": 2
+        },
+        "keyboard": {
+          "minLevel": 2
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "not_applicable",
+        "missingRhythmGuitar": "program_rhythm",
+        "missingBass": "omit",
+        "missingDrums": "program_drums",
+        "missingKeyboard": "omit",
+        "missingVocals": "not_applicable"
+      }
+    },
+    {
+      "id": "song-076",
+      "title": "Under Pressure",
+      "artist": "Queen & David Bowie",
+      "style": "rock",
+      "styles": [
+        "pop",
+        "funk"
+      ],
+      "bpm": 92,
+      "notes": "贝斯线 iconic，需和鼓锁紧",
+      "arrangement": {
+        "vocals": "required",
+        "guitars": {
+          "count": 1,
+          "lead": "none",
+          "rhythm": "optional"
+        },
+        "bass": "required",
+        "drums": "required",
+        "keyboard": "important"
+      },
+      "parts": {
+        "vocals": {
+          "minLevel": 3
+        },
+        "rhythmGuitar": {
+          "minLevel": 2
+        },
+        "bass": {
+          "minLevel": 3
+        },
+        "drums": {
+          "minLevel": 3
+        },
+        "keyboard": {
+          "minLevel": 3
+        }
+      },
+      "fallbacks": {
+        "missingLeadGuitar": "not_applicable",
+        "missingRhythmGuitar": "omit",
         "missingBass": "program_bass",
         "missingDrums": "program_drums",
         "missingKeyboard": "program_pad",

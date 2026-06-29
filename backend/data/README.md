@@ -96,6 +96,21 @@ npm run preview:recommendations -- band-newbie-rock
 
 完整枚举见 `seedSong.ts` 与 `FALLBACK_LABELS`。
 
+### 流派标签约定（`style` / `styles`）
+
+- **`style`**：最具体的主标签（如 `grunge`、`deathcore`），用于展示和排序
+- **`styles`**：可选上位/相关标签（如 Grunge 歌加 `"rock"`），规则引擎会合并匹配
+- 一首歌**不限一种流派**；乐队问卷选「摇滚」时，应能匹配 `style: "grunge", styles: ["rock"]` 的歌
+- 代码里**没有**自动父子继承，靠人工打 `styles` 表达「Grunge ⊂ 摇滚」
+
+扩库目标（按 `MUSIC_STYLES` 顺序分批）：
+
+| 档位 | 流派 | 主标签 `style` 目标数量 |
+|------|------|------------------------|
+| 大 | rock, pop, indie | 20–30 |
+| 中 | folk, punk, metal, acg, jazz… | 10–15 |
+| 小 | classical, world, country… | ≥10 |
+
 ---
 
 ## 完整示例（定稿参考）
