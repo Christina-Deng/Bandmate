@@ -9,6 +9,8 @@ export interface RecommendedSong {
   reason: string;
   arrangementHints: string[];
   programHints: string[];
+  stretchHints: string[];
+  isStretch: boolean;
   listenUrl: string;
 }
 
@@ -16,6 +18,7 @@ export interface RecommendationResponse {
   status: 'coming_soon' | 'ok' | 'empty';
   songs: RecommendedSong[];
   message?: string;
+  hints?: string[];
   /** Server has DeepSeek API key configured */
   aiAvailable?: boolean;
   /** Whether this response used AI for copy (false = rule-only) */

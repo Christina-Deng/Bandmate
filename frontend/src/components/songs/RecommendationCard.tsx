@@ -3,9 +3,16 @@ import type { RecommendedSong } from '../../types/song';
 export function RecommendationCard({ song }: { song: RecommendedSong }) {
   return (
     <article className="rounded-xl border border-slate-700 bg-slate-900 p-5 space-y-3">
-      <header>
-        <h3 className="text-lg font-semibold">{song.title}</h3>
-        <p className="text-sm text-slate-400">{song.artist}</p>
+      <header className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h3 className="text-lg font-semibold">{song.title}</h3>
+          <p className="text-sm text-slate-400">{song.artist}</p>
+        </div>
+        {song.isStretch && (
+          <span className="recommend-stretch-badge shrink-0 rounded-md px-2 py-0.5 text-xs font-medium">
+            偏难
+          </span>
+        )}
       </header>
       <p className="text-sm leading-relaxed text-slate-300">{song.reason}</p>
       <dl className="grid gap-1 text-xs text-slate-400">
@@ -21,6 +28,11 @@ export function RecommendationCard({ song }: { song: RecommendedSong }) {
           </dd>
         </div>
       </dl>
+      {song.stretchHints.length > 0 && (
+        <p className="recommend-hint-stretch text-xs">
+          技能挑战：{song.stretchHints.join('；')}
+        </p>
+      )}
       {song.arrangementHints.length > 0 && (
         <p className="recommend-hint-warn text-xs">
           编制提示：{song.arrangementHints.join('；')}

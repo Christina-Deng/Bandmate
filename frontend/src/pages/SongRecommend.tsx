@@ -24,6 +24,7 @@ export function SongRecommendPage() {
   const [songs, setSongs] = useState<RecommendedSong[]>([]);
   const [status, setStatus] = useState<'loading' | 'ok' | 'empty' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const [emptyHints, setEmptyHints] = useState<string[]>([]);
 
   useEffect(() => {
     if (bands.length === 0) {
@@ -47,14 +48,17 @@ export function SongRecommendPage() {
           setSongs(res.songs);
           setStatus('ok');
           setMessage(res.message ?? '');
+          setEmptyHints([]);
         } else if (res.status === 'empty') {
           setSongs([]);
           setStatus('empty');
           setMessage(res.message ?? '暂无匹配曲目');
+          setEmptyHints(res.hints ?? []);
         } else {
           setSongs([]);
           setStatus('empty');
           setMessage(res.message ?? '功能开发中');
+          setEmptyHints([]);
         }
       })
       .catch(() => {
@@ -148,6 +152,16 @@ export function SongRecommendPage() {
         <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center">
           <p className="text-lg text-slate-300">暂无推荐</p>
           <p className="mt-2 text-sm text-slate-500">{message}</p>
+          {emptyHints.length > 0 && (
+            <ul className="mx-auto mt-4 max-w-md space-y-2 text-left text-sm text-slate-400">
+              {emptyHints.map((hint) => (
+                <li key={hint} className="flex gap-2">
+                  <span className="text-slate-500">·</span>
+                  <span>{hint}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
     </div>

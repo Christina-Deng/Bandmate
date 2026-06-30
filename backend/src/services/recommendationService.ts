@@ -11,6 +11,7 @@ import {
   formatArrangementSummary,
   formatPartsSummary,
 } from './recommendationFormatter.js';
+import { diagnoseEmptyRecommendations } from './recommendationDiagnosis.js';
 import {
   rankCandidates,
   scoreCandidates,
@@ -37,6 +38,8 @@ function mapCandidateToRecommendedSong(
     reason: reason ?? buildFallbackReason(candidate, bandName),
     arrangementHints: candidate.arrangementHints,
     programHints: candidate.programHints,
+    stretchHints: candidate.stretchHints,
+    isStretch: candidate.isStretch,
     listenUrl: buildNeteaseSearchUrl(song.title, song.artist),
   };
 }
@@ -115,10 +118,12 @@ export async function getRecommendationsForBand(
   );
 
   if (pool.length === 0) {
+    const diagnosis = diagnoseEmptyRecommendations(loadSongSeed(), ruleInput);
     return {
       status: 'empty',
       songs: [],
-      message: '暂无匹配曲目，试试调整乐队风格或完善成员资料',
+      message: diagnosis.message,
+      hints: diagnosis.hints,
       aiAvailable,
       aiUsed: false,
     };

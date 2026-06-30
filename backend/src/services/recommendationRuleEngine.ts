@@ -19,6 +19,8 @@ export interface ScoredCandidate {
   headroom: number;
   arrangementHints: string[];
   programHints: string[];
+  stretchHints: string[];
+  isStretch: boolean;
 }
 
 const PART_LABELS: Record<SongPartId, string> = {
@@ -44,6 +46,7 @@ function songStyles(song: SeedSong): string[] {
 }
 
 export function computeStyleScore(song: SeedSong, preferences: string[]): number {
+  if (!Array.isArray(preferences)) return 1;
   const styles = songStyles(song);
   const hits = preferences.filter((p) => styles.includes(p)).length;
   return hits > 0 ? hits : preferences.length > 0 ? 0 : 1;
@@ -99,11 +102,18 @@ function fallbackKeyForPart(part: SongPartId): keyof SeedSong['fallbacks'] {
   return map[part];
 }
 
-function evaluateSong(song: SeedSong, members: RuleEngineMember[]): ScoredCandidate | null {
+/** @param maxSkillShortfall 0 = strict; 1 = allow one level below minLevel on assigned parts */
+export function evaluateSong(
+  song: SeedSong,
+  members: RuleEngineMember[],
+  maxSkillShortfall = 0,
+): ScoredCandidate | null {
   const coverage = assignCoverage(members);
   const arrangementHints: string[] = [];
   const programHints: string[] = [];
+  const stretchHints: string[] = [];
   let headroom = 0;
+  let isStretch = false;
 
   const partIds = Object.keys(song.parts) as SongPartId[];
 
@@ -114,7 +124,13 @@ function evaluateSong(song: SeedSong, members: RuleEngineMember[]): ScoredCandid
 
     if (player) {
       const gap = player.skillLevel - minLevel;
-      if (gap < 0) return null;
+      if (gap < -maxSkillShortfall) return null;
+      if (gap < 0) {
+        isStretch = true;
+        stretchHints.push(
+          `${PART_LABELS[part]}（${player.displayName}）当前 ${player.skillLevel} 级，本曲建议 ${minLevel} 级，排练前需加强`,
+        );
+      }
       headroom += gap;
       continue;
     }
@@ -141,22 +157,40 @@ function evaluateSong(song: SeedSong, members: RuleEngineMember[]): ScoredCandid
     headroom,
     arrangementHints,
     programHints,
+    stretchHints,
+    isStretch,
   };
 }
 
 export function scoreCandidates(songs: SeedSong[], input: RuleEngineInput): ScoredCandidate[] {
-  return songs
-    .map((song) => {
-      const scored = evaluateSong(song, input.members);
-      if (!scored) return null;
-      scored.styleScore = computeStyleScore(song, input.stylePreferences);
-      return scored;
-    })
-    .filter((s): s is ScoredCandidate => s !== null && s.styleScore > 0);
+  const strictIds = new Set<string>();
+  const strict: ScoredCandidate[] = [];
+
+  for (const song of songs) {
+    const scored = evaluateSong(song, input.members, 0);
+    if (!scored) continue;
+    scored.styleScore = computeStyleScore(song, input.stylePreferences);
+    if (scored.styleScore <= 0) continue;
+    strictIds.add(song.id);
+    strict.push(scored);
+  }
+
+  const stretch: ScoredCandidate[] = [];
+  for (const song of songs) {
+    if (strictIds.has(song.id)) continue;
+    const scored = evaluateSong(song, input.members, 1);
+    if (!scored || !scored.isStretch) continue;
+    scored.styleScore = computeStyleScore(song, input.stylePreferences);
+    if (scored.styleScore <= 0) continue;
+    stretch.push(scored);
+  }
+
+  return [...strict, ...stretch];
 }
 
 export function rankCandidates(candidates: ScoredCandidate[]): ScoredCandidate[] {
   return [...candidates].sort((a, b) => {
+    if (a.isStretch !== b.isStretch) return a.isStretch ? 1 : -1;
     if (b.styleScore !== a.styleScore) return b.styleScore - a.styleScore;
     if (b.headroom !== a.headroom) return b.headroom - a.headroom;
     return (a.song.bpm ?? 999) - (b.song.bpm ?? 999);

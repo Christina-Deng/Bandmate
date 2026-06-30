@@ -43,6 +43,7 @@
   --theme-slate-300: #d4d4d4;
   --theme-hint-warn: #fcd34d;
   --theme-hint-program: #7dd3fc;
+  --theme-hint-stretch: #fb923c;
 }
 
 [data-theme="rock"] {
@@ -67,6 +68,7 @@
   --theme-slate-300: #d4d4d4;
   --theme-hint-warn: #fcd34d;
   --theme-hint-program: #7dd3fc;
+  --theme-hint-stretch: #fb923c;
 }
 
 [data-theme="indigo"] {
@@ -91,6 +93,7 @@
   --theme-slate-300: #d4d4d8;
   --theme-hint-warn: #fcd34d;
   --theme-hint-program: #7dd3fc;
+  --theme-hint-stretch: #fb923c;
 }
 
 [data-theme="paper"] {
@@ -115,6 +118,7 @@
   --theme-slate-300: #292524;
   --theme-hint-warn: #92400e;
   --theme-hint-program: #075985;
+  --theme-hint-stretch: #c2410c;
 }
 
 [data-theme="light"] {
@@ -139,6 +143,7 @@
   --theme-slate-300: #334155;
   --theme-hint-warn: #b45309;
   --theme-hint-program: #0369a1;
+  --theme-hint-stretch: #c2410c;
 }
 
 body {
@@ -719,6 +724,17 @@ textarea:focus-visible {
 .recommend-hint-program {
   color: var(--theme-hint-program);
   font-weight: 500;
+}
+
+.recommend-hint-stretch {
+  color: var(--theme-hint-stretch);
+  font-weight: 500;
+}
+
+.recommend-stretch-badge {
+  border: 1px solid color-mix(in srgb, var(--theme-hint-stretch) 55%, transparent);
+  background: color-mix(in srgb, var(--theme-hint-stretch) 12%, transparent);
+  color: var(--theme-hint-stretch);
 }
 
 .auth-watermark {

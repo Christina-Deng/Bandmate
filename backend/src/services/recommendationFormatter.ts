@@ -50,5 +50,9 @@ export function buildFallbackReason(candidate: ScoredCandidate, bandName: string
     candidate.arrangementHints.length > 0
       ? `注意编制提示：${candidate.arrangementHints[0]}。`
       : '';
-  return `适合「${bandName}」排练：风格匹配，全员 skill 达标。${hints}`.trim();
+  const stretch =
+    candidate.isStretch ?
+      '本曲对部分成员偏难，见下方「技能挑战」提示。'
+    : '风格匹配，全员 skill 达标。';
+  return `适合「${bandName}」排练：${stretch}${hints}`.trim();
 }
