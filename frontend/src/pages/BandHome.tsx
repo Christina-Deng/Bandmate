@@ -50,13 +50,13 @@ export function BandHomePage() {
       )}
 
       {joinMessage && (
-        <p className="rounded-lg border border-accent-500/40 bg-accent-500/10 px-4 py-3 text-sm text-slate-200">
+        <p className="rounded-lg border border-accent-500/40 bg-accent-500/10 px-4 py-3 text-sm text-slate-300">
           {joinMessage}
         </p>
       )}
 
       {leaveMessage && (
-        <p className="rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-sm text-slate-200">
+        <p className="rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-sm text-slate-300">
           {leaveMessage}
         </p>
       )}
