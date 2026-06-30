@@ -1,16 +1,5 @@
 import { prisma } from '../lib/prisma.js';
-
-function todayDateString(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function parseDateOnly(dateStr: string): Date {
-  return new Date(`${dateStr}T00:00:00.000Z`);
-}
+import { parsePracticeDate, practiceDateString } from '../lib/practiceDates.js';
 
 export async function createPractice(input: {
   bandId: string;
@@ -30,7 +19,7 @@ export async function createPractice(input: {
     throw Object.assign(new Error('Duration must be at least 1 minute'), { statusCode: 400 });
   }
 
-  const date = parseDateOnly(todayDateString());
+  const date = parsePracticeDate(practiceDateString());
 
   try {
     return await prisma.practiceLog.create({
@@ -91,7 +80,7 @@ export async function getTodayStatus(bandId: string, userId: string) {
     throw Object.assign(new Error('Not a band member'), { statusCode: 403 });
   }
 
-  const today = parseDateOnly(todayDateString());
+  const today = parsePracticeDate(practiceDateString());
 
   const members = await prisma.bandMember.findMany({
     where: { bandId },
@@ -122,4 +111,4 @@ export async function getTodayStatus(bandId: string, userId: string) {
   });
 }
 
-export { todayDateString };
+export { practiceDateString as todayDateString };

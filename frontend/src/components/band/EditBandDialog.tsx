@@ -80,7 +80,7 @@ export function EditBandDialog({
 
           <StyleMultiSelect
             label="乐队风格偏好（可选）"
-            hint="可多选，帮助成员对齐排练方向"
+            hint="用于歌单推荐筛选；未设置时会合并成员问卷中的风格"
             selected={stylePreferences}
             onChange={setStylePreferences}
           />

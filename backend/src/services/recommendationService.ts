@@ -40,6 +40,7 @@ function mapCandidateToRecommendedSong(
     programHints: candidate.programHints,
     stretchHints: candidate.stretchHints,
     isStretch: candidate.isStretch,
+    isStyleStretch: candidate.isStyleStretch === true,
     listenUrl: buildNeteaseSearchUrl(song.title, song.artist),
   };
 }
@@ -110,7 +111,8 @@ export async function getRecommendationsForBand(
   }
 
   const band = await getBand(bandId, userId);
-  const { bandName, ...ruleInput } = bandToRuleEngineInput(band);
+  const profile = bandToRuleEngineInput(band);
+  const { bandName, ...ruleInput } = profile;
 
   const pool = rankCandidates(scoreCandidates(loadSongSeed(), ruleInput)).slice(
     0,
@@ -132,14 +134,21 @@ export async function getRecommendationsForBand(
   const useAi = options.useAi === true;
   const { songs, aiUsed } = await pickWithOptionalAi(pool, bandName, ruleInput, useAi);
 
+  const styleSourceMessage =
+    profile.stylePreferenceSource === 'members' ?
+      '乐队未设置统一风格，已根据成员问卷中的偏好匹配'
+    : undefined;
+
+  const aiFallbackMessage =
+    useAi && aiAvailable && !aiUsed ? 'AI 暂时不可用，已使用规则推荐' : undefined;
+
+  const infoMessages = [aiFallbackMessage, styleSourceMessage].filter(Boolean);
+
   return {
     status: 'ok',
     songs,
     aiAvailable,
     aiUsed,
-    message:
-      useAi && aiAvailable && !aiUsed ?
-        'AI 暂时不可用，已使用规则推荐'
-      : undefined,
+    message: infoMessages.length > 0 ? infoMessages.join('；') : undefined,
   };
 }

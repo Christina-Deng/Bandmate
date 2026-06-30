@@ -11,6 +11,7 @@ export interface RecommendedSong {
   programHints: string[];
   stretchHints: string[];
   isStretch: boolean;
+  isStyleStretch?: boolean;
   listenUrl: string;
 }
 

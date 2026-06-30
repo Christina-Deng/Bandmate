@@ -1,4 +1,11 @@
 import { prisma } from '../lib/prisma.js';
+import {
+  computeStreak,
+  parsePracticeDate,
+  practiceDateString,
+  startOfPracticeMonth,
+  startOfPracticeWeek,
+} from '../lib/practiceDates.js';
 
 export interface PersonalPracticeStats {
   streakDays: number;
@@ -25,57 +32,7 @@ export interface PracticeStats {
   band: BandPracticeStats;
 }
 
-function localDateString(d: Date = new Date()): string {
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function addDays(dateStr: string, delta: number): string {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const next = new Date(y, m - 1, d);
-  next.setDate(next.getDate() + delta);
-  return localDateString(next);
-}
-
-function logDateString(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function startOfLocalWeek(dateStr: string): string {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  const weekday = date.getDay();
-  const diff = weekday === 0 ? -6 : 1 - weekday;
-  date.setDate(date.getDate() + diff);
-  return localDateString(date);
-}
-
-function startOfLocalMonth(dateStr: string): string {
-  const [y, m] = dateStr.split('-').map(Number);
-  return `${y}-${String(m).padStart(2, '0')}-01`;
-}
-
-/** Consecutive practice days ending today, or yesterday if not yet checked in today. */
-export function computeStreak(uniqueDatesDesc: string[], todayStr: string): number {
-  if (uniqueDatesDesc.length === 0) return 0;
-
-  const dateSet = new Set(uniqueDatesDesc);
-  let anchor = todayStr;
-  if (!dateSet.has(anchor)) {
-    anchor = addDays(todayStr, -1);
-    if (!dateSet.has(anchor)) return 0;
-  }
-
-  let streak = 0;
-  let cursor = anchor;
-  while (dateSet.has(cursor)) {
-    streak += 1;
-    cursor = addDays(cursor, -1);
-  }
-  return streak;
-}
+export { computeStreak } from '../lib/practiceDates.js';
 
 export async function getPracticeStats(input: {
   userId: string;
@@ -88,9 +45,9 @@ export async function getPracticeStats(input: {
     throw Object.assign(new Error('Not a band member'), { statusCode: 403 });
   }
 
-  const todayStr = localDateString();
-  const weekStart = startOfLocalWeek(todayStr);
-  const monthStart = startOfLocalMonth(todayStr);
+  const todayStr = practiceDateString();
+  const weekStart = startOfPracticeWeek(todayStr);
+  const monthStart = startOfPracticeMonth(todayStr);
 
   const [personalLogs, bandLogs, members] = await Promise.all([
     prisma.practiceLog.findMany({
@@ -100,7 +57,7 @@ export async function getPracticeStats(input: {
     prisma.practiceLog.findMany({
       where: {
         bandId: input.bandId,
-        date: { gte: new Date(`${weekStart}T00:00:00.000Z`) },
+        date: { gte: parsePracticeDate(weekStart) },
       },
       select: { userId: true, date: true, durationMinutes: true, user: { select: { displayName: true } } },
     }),
@@ -112,7 +69,7 @@ export async function getPracticeStats(input: {
 
   const personalDaily = new Map<string, number>();
   for (const log of personalLogs) {
-    const key = logDateString(log.date);
+    const key = practiceDateString(log.date);
     personalDaily.set(key, (personalDaily.get(key) ?? 0) + log.durationMinutes);
   }
 
@@ -143,7 +100,7 @@ export async function getPracticeStats(input: {
     monthCheckInDays,
   };
 
-  const todayLogs = bandLogs.filter((log) => logDateString(log.date) === todayStr);
+  const todayLogs = bandLogs.filter((log) => practiceDateString(log.date) === todayStr);
   const checkedInUserIds = new Set(todayLogs.map((log) => log.userId));
   const totalMembers = members.length;
   const teamTodayMinutes = todayLogs.reduce((sum, log) => sum + log.durationMinutes, 0);
@@ -152,7 +109,7 @@ export async function getPracticeStats(input: {
   const weekMemberDays = new Map<string, { displayName: string; days: Set<string> }>();
 
   for (const log of bandLogs) {
-    const date = logDateString(log.date);
+    const date = practiceDateString(log.date);
     if (date > todayStr) continue;
     weekBandMinutes += log.durationMinutes;
 

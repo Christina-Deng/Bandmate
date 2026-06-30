@@ -108,7 +108,7 @@ export function SkillQuestionnaire({ open, onClose, onSubmit, initial = null }: 
         <div className="mt-4">
           <StyleMultiSelect
             label="个人风格偏好"
-            hint="可多选，便于队友了解你想练什么风格"
+            hint="乐队未设置统一风格时，歌单推荐会合并所有成员的风格偏好"
             selected={stylePreferences}
             onChange={setStylePreferences}
           />

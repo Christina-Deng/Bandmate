@@ -10,6 +10,10 @@ function generateInviteCode(): string {
   return crypto.randomBytes(4).toString('hex');
 }
 
+export function normalizeInviteCode(code: string): string {
+  return code.trim().toLowerCase();
+}
+
 async function findUserProfileSource(userId: string) {
   const memberships = await prisma.bandMember.findMany({
     where: { userId },
@@ -86,7 +90,12 @@ export async function createBand(input: {
 }
 
 export async function joinBand(input: { userId: string; inviteCode: string }) {
-  const band = await prisma.band.findUnique({ where: { inviteCode: input.inviteCode } });
+  const inviteCode = normalizeInviteCode(input.inviteCode);
+  if (!inviteCode) {
+    throw Object.assign(new Error('邀请码无效'), { statusCode: 400 });
+  }
+
+  const band = await prisma.band.findUnique({ where: { inviteCode } });
   if (!band) {
     throw Object.assign(new Error('邀请码无效'), { statusCode: 404 });
   }

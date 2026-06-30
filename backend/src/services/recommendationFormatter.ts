@@ -53,6 +53,8 @@ export function buildFallbackReason(candidate: ScoredCandidate, bandName: string
   const stretch =
     candidate.isStretch ?
       '本曲对部分成员偏难，见下方「技能挑战」提示。'
+    : candidate.isStyleStretch ?
+      '风格与乐队偏好不完全一致，但编制与技能适合。'
     : '风格匹配，全员 skill 达标。';
   return `适合「${bandName}」排练：${stretch}${hints}`.trim();
 }

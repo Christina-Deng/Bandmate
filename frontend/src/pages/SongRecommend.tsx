@@ -22,7 +22,7 @@ export function SongRecommendPage() {
   const [useAi, setUseAi] = useState(readUseAiPreference);
   const [aiAvailable, setAiAvailable] = useState(false);
   const [songs, setSongs] = useState<RecommendedSong[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ok' | 'empty' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ok' | 'empty' | 'coming_soon' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [emptyHints, setEmptyHints] = useState<string[]>([]);
 
@@ -54,10 +54,15 @@ export function SongRecommendPage() {
           setStatus('empty');
           setMessage(res.message ?? '暂无匹配曲目');
           setEmptyHints(res.hints ?? []);
+        } else if (res.status === 'coming_soon') {
+          setSongs([]);
+          setStatus('coming_soon');
+          setMessage(res.message ?? '功能开发中，敬请期待');
+          setEmptyHints([]);
         } else {
           setSongs([]);
-          setStatus('empty');
-          setMessage(res.message ?? '功能开发中');
+          setStatus('error');
+          setMessage(res.message ?? '加载推荐失败');
           setEmptyHints([]);
         }
       })
@@ -105,7 +110,11 @@ export function SongRecommendPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-slate-400">
-          根据 {viewBand?.name} 成员水平和风格偏好，推荐适合排练的歌曲。
+          根据 {viewBand?.name} 成员水平和
+          {viewBand?.stylePreferences && viewBand.stylePreferences.length > 0 ?
+            '乐队设置的风格偏好'
+          : '成员问卷中的风格（乐队未设置统一风格时）'}
+          ，推荐适合排练的歌曲。
         </p>
         <label
           className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
@@ -150,7 +159,7 @@ export function SongRecommendPage() {
 
       {(status === 'empty' || status === 'error') && (
         <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center">
-          <p className="text-lg text-slate-300">暂无推荐</p>
+          <p className="text-lg text-slate-300">{status === 'error' ? '加载失败' : '暂无推荐'}</p>
           <p className="mt-2 text-sm text-slate-500">{message}</p>
           {emptyHints.length > 0 && (
             <ul className="mx-auto mt-4 max-w-md space-y-2 text-left text-sm text-slate-400">
@@ -162,6 +171,13 @@ export function SongRecommendPage() {
               ))}
             </ul>
           )}
+        </div>
+      )}
+
+      {status === 'coming_soon' && (
+        <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center">
+          <p className="text-lg text-slate-300">功能开发中</p>
+          <p className="mt-2 text-sm text-slate-500">{message}</p>
         </div>
       )}
     </div>

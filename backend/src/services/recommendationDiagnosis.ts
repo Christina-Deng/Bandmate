@@ -59,6 +59,10 @@ export function diagnoseEmptyRecommendations(
     );
   } else if (stylePreferences.length === 0) {
     hints.push('乐队尚未设置风格偏好，可在乐队页编辑并勾选常排练的流派');
+  } else if (input.stylePreferenceSource === 'members') {
+    hints.push(
+      '乐队尚未在设置里统一风格，当前根据成员问卷合并匹配；建议在乐队页编辑并勾选常排练流派',
+    );
   }
 
   if (counts.arrangement >= counts.style && counts.arrangement > 0) {

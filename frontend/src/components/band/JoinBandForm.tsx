@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useBand } from '../../hooks/useBand';
+import { normalizeInviteCode } from '../../lib/invite';
 
 export function JoinBandForm({ onSuccess }: { onSuccess?: () => void }) {
   const { joinBand } = useBand();
@@ -12,7 +13,7 @@ export function JoinBandForm({ onSuccess }: { onSuccess?: () => void }) {
     setLoading(true);
     setError('');
     try {
-      await joinBand(inviteCode.trim());
+      await joinBand(normalizeInviteCode(inviteCode) ?? '');
       setInviteCode('');
       onSuccess?.();
     } catch {

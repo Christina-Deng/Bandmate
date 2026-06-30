@@ -8,11 +8,18 @@ export function RecommendationCard({ song }: { song: RecommendedSong }) {
           <h3 className="text-lg font-semibold">{song.title}</h3>
           <p className="text-sm text-slate-400">{song.artist}</p>
         </div>
-        {song.isStretch && (
-          <span className="recommend-stretch-badge shrink-0 rounded-md px-2 py-0.5 text-xs font-medium">
-            偏难
-          </span>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {song.isStretch && (
+            <span className="recommend-stretch-badge shrink-0 rounded-md px-2 py-0.5 text-xs font-medium">
+              偏难
+            </span>
+          )}
+          {song.isStyleStretch && (
+            <span className="shrink-0 rounded-md border border-slate-600 px-2 py-0.5 text-xs font-medium text-slate-300">
+              风格略偏
+            </span>
+          )}
+        </div>
       </header>
       <p className="text-sm leading-relaxed text-slate-300">{song.reason}</p>
       <dl className="grid gap-1 text-xs text-slate-400">

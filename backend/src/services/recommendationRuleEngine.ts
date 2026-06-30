@@ -10,6 +10,7 @@ export interface RuleEngineMember {
 
 export interface RuleEngineInput {
   stylePreferences: string[];
+  stylePreferenceSource?: 'band' | 'members' | 'none';
   members: RuleEngineMember[];
 }
 
@@ -21,7 +22,11 @@ export interface ScoredCandidate {
   programHints: string[];
   stretchHints: string[];
   isStretch: boolean;
+  isStyleStretch?: boolean;
 }
+
+/** When style-matched candidates fall below this, include skill-fit songs outside band styles. */
+export const STYLE_MATCH_MIN = 6;
 
 const PART_LABELS: Record<SongPartId, string> = {
   vocals: '主唱',
@@ -52,20 +57,28 @@ export function computeStyleScore(song: SeedSong, preferences: string[]): number
   return hits > 0 ? hits : preferences.length > 0 ? 0 : 1;
 }
 
-function assignCoverage(members: RuleEngineMember[]): BandCoverage {
-  const coverage: BandCoverage = {};
-  const guitarists = members.filter((m) => m.instrument === 'GUITAR');
+function pickBestMember(
+  members: RuleEngineMember[],
+  instrument: RuleEngineInstrument,
+): RuleEngineMember | undefined {
+  return members
+    .filter((m) => m.instrument === instrument)
+    .sort((a, b) => b.skillLevel - a.skillLevel)[0];
+}
 
-  for (const m of members) {
-    if (m.instrument === 'VOCALS') coverage.vocals = m;
-    if (m.instrument === 'BASS') coverage.bass = m;
-    if (m.instrument === 'DRUMS') coverage.drums = m;
-    if (m.instrument === 'KEYBOARD') coverage.keyboard = m;
-  }
-  if (guitarists[0]) coverage.rhythmGuitar = guitarists[0];
-  if (guitarists[1]) coverage.leadGuitar = guitarists[1];
+export function assignCoverage(members: RuleEngineMember[]): BandCoverage {
+  const guitarists = members
+    .filter((m) => m.instrument === 'GUITAR')
+    .sort((a, b) => b.skillLevel - a.skillLevel);
 
-  return coverage;
+  return {
+    vocals: pickBestMember(members, 'VOCALS'),
+    bass: pickBestMember(members, 'BASS'),
+    drums: pickBestMember(members, 'DRUMS'),
+    keyboard: pickBestMember(members, 'KEYBOARD'),
+    rhythmGuitar: guitarists[0],
+    leadGuitar: guitarists[1],
+  };
 }
 
 function partRequired(song: SeedSong, part: SongPartId): boolean {
@@ -163,34 +176,54 @@ export function evaluateSong(
 }
 
 export function scoreCandidates(songs: SeedSong[], input: RuleEngineInput): ScoredCandidate[] {
+  const { stylePreferences: preferences } = input;
+  const strictStyleMatch: ScoredCandidate[] = [];
+  const strictStyleMiss: ScoredCandidate[] = [];
   const strictIds = new Set<string>();
-  const strict: ScoredCandidate[] = [];
 
   for (const song of songs) {
     const scored = evaluateSong(song, input.members, 0);
     if (!scored) continue;
-    scored.styleScore = computeStyleScore(song, input.stylePreferences);
-    if (scored.styleScore <= 0) continue;
+    scored.styleScore = computeStyleScore(song, preferences);
     strictIds.add(song.id);
-    strict.push(scored);
+    if (scored.styleScore > 0) strictStyleMatch.push(scored);
+    else strictStyleMiss.push(scored);
   }
 
-  const stretch: ScoredCandidate[] = [];
+  const skillStretchStyleMatch: ScoredCandidate[] = [];
+  const skillStretchStyleMiss: ScoredCandidate[] = [];
+
   for (const song of songs) {
     if (strictIds.has(song.id)) continue;
     const scored = evaluateSong(song, input.members, 1);
     if (!scored || !scored.isStretch) continue;
-    scored.styleScore = computeStyleScore(song, input.stylePreferences);
-    if (scored.styleScore <= 0) continue;
-    stretch.push(scored);
+    scored.styleScore = computeStyleScore(song, preferences);
+    if (scored.styleScore > 0) {
+      skillStretchStyleMatch.push(scored);
+    } else {
+      skillStretchStyleMiss.push(scored);
+    }
   }
 
-  return [...strict, ...stretch];
+  const styleMatched = [...strictStyleMatch, ...skillStretchStyleMatch];
+  if (preferences.length === 0 || styleMatched.length >= STYLE_MATCH_MIN) {
+    return styleMatched;
+  }
+
+  const styleStretch = [...strictStyleMiss, ...skillStretchStyleMiss].map((scored) => ({
+    ...scored,
+    isStyleStretch: true,
+  }));
+
+  return [...styleMatched, ...styleStretch];
 }
 
 export function rankCandidates(candidates: ScoredCandidate[]): ScoredCandidate[] {
   return [...candidates].sort((a, b) => {
     if (a.isStretch !== b.isStretch) return a.isStretch ? 1 : -1;
+    if (Boolean(a.isStyleStretch) !== Boolean(b.isStyleStretch)) {
+      return a.isStyleStretch ? 1 : -1;
+    }
     if (b.styleScore !== a.styleScore) return b.styleScore - a.styleScore;
     if (b.headroom !== a.headroom) return b.headroom - a.headroom;
     return (a.song.bpm ?? 999) - (b.song.bpm ?? 999);

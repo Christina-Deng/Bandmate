@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { loadSongSeed } from '../lib/songSeedLoader.js';
 import { diagnoseEmptyRecommendations } from './recommendationDiagnosis.js';
-import { evaluateSong, rankCandidates, scoreCandidates } from './recommendationRuleEngine.js';
+import {
+  assignCoverage,
+  evaluateSong,
+  rankCandidates,
+  scoreCandidates,
+  STYLE_MATCH_MIN,
+} from './recommendationRuleEngine.js';
 
 const newbieBand = {
   stylePreferences: ['rock', 'pop', 'folk'],
@@ -76,6 +82,51 @@ describe('recommendationRuleEngine', () => {
     const firstStretchIdx = ranked.findIndex((c) => c.isStretch);
     if (firstStretchIdx > 0) {
       expect(ranked.slice(0, firstStretchIdx).every((c) => !c.isStretch)).toBe(true);
+    }
+  });
+
+  it('uses highest skill when multiple members share an instrument', () => {
+    const seed = loadSongSeed();
+    const wonderwall = seed.find((s) => s.title === 'Wonderwall')!;
+    const scored = evaluateSong(
+      wonderwall,
+      [
+        { displayName: '弱', instrument: 'VOCALS', skillLevel: 1 },
+        { displayName: '强', instrument: 'VOCALS', skillLevel: 4 },
+        { displayName: 'G', instrument: 'GUITAR', skillLevel: 4 },
+        { displayName: 'B', instrument: 'BASS', skillLevel: 3 },
+        { displayName: 'D', instrument: 'DRUMS', skillLevel: 3 },
+      ],
+      0,
+    );
+    expect(scored).not.toBeNull();
+
+    const coverage = assignCoverage([
+      { displayName: '弱', instrument: 'VOCALS', skillLevel: 1 },
+      { displayName: '强', instrument: 'VOCALS', skillLevel: 4 },
+      { displayName: 'G1', instrument: 'GUITAR', skillLevel: 5 },
+      { displayName: 'G2', instrument: 'GUITAR', skillLevel: 2 },
+    ]);
+    expect(coverage.vocals?.displayName).toBe('强');
+    expect(coverage.rhythmGuitar?.displayName).toBe('G1');
+    expect(coverage.leadGuitar?.displayName).toBe('G2');
+  });
+
+  it('adds style-stretch candidates when style matches are scarce', () => {
+    const seed = loadSongSeed();
+    const scored = scoreCandidates(seed, {
+      stylePreferences: ['mathrock'],
+      members: [
+        { displayName: 'G', instrument: 'GUITAR', skillLevel: 4 },
+        { displayName: 'B', instrument: 'BASS', skillLevel: 4 },
+        { displayName: 'D', instrument: 'DRUMS', skillLevel: 4 },
+        { displayName: 'V', instrument: 'VOCALS', skillLevel: 4 },
+      ],
+    });
+    const styleMatched = scored.filter((c) => !c.isStyleStretch);
+    const styleStretch = scored.filter((c) => c.isStyleStretch);
+    if (styleMatched.length < STYLE_MATCH_MIN) {
+      expect(styleStretch.length).toBeGreaterThan(0);
     }
   });
 
