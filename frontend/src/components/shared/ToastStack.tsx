@@ -55,7 +55,7 @@ function ToastItem({
       role="status"
       className={`pointer-events-auto max-w-md rounded-xl border px-4 py-3 text-sm shadow-lg transition-all duration-200 ${
         toast.tone === 'warning'
-          ? 'border-slate-600 bg-slate-900 text-slate-200'
+          ? 'toast-default shadow-lg'
           : 'border-accent-600/40 bg-slate-900 text-emphasis shadow-accent-600/10'
       } ${visible ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'}`}
     >

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { AppearanceMenu } from './AppearanceMenu';
+import { PosterBackground } from './PosterBackground';
 
 interface Props {
   title: string;
@@ -10,8 +11,9 @@ interface Props {
 
 export function AuthPageLayout({ title, lead, children, footer }: Props) {
   return (
-    <div className="auth-shell min-h-screen px-4 py-8 md:py-12">
-      <div className="mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr,min(100%,24rem)] md:items-center md:gap-16 lg:grid-cols-[1.1fr,min(100%,26rem)]">
+    <div className="auth-shell relative min-h-screen px-4 py-8 md:py-12">
+      <PosterBackground variant="auth" />
+      <div className="relative z-[1] mx-auto grid max-w-5xl gap-10 md:grid-cols-[1fr,min(100%,24rem)] md:items-center md:gap-16 lg:grid-cols-[1.1fr,min(100%,26rem)]">
         <aside className="auth-brand relative hidden md:block">
           <p className="font-display-heavy text-5xl leading-none text-accent-600 lg:text-6xl">BandMate</p>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">

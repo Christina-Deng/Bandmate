@@ -49,7 +49,7 @@ export function LeaveBandConfirmDialog({
         role="dialog"
         aria-labelledby="leave-band-title"
         aria-modal="true"
-        className="w-full max-w-md rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl"
+        className="dialog-panel w-full max-w-md rounded-xl p-6"
         onMouseDown={(e) => e.stopPropagation()}
       >
         <h2 id="leave-band-title" className="text-lg font-semibold text-emphasis">
@@ -57,11 +57,11 @@ export function LeaveBandConfirmDialog({
         </h2>
 
         <p className="mt-3 text-sm text-slate-300">
-          你即将退出乐队「<span className="font-medium text-slate-100">{bandName}</span>」。
+          你即将退出乐队「<span className="font-semibold text-emphasis">{bandName}</span>」。
         </p>
 
         {isLastMember ? (
-          <p className="mt-2 rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-300">
+          <p className="dialog-callout mt-2 rounded-lg px-3 py-2 text-sm">
             你是最后一名成员，退出后乐队将被解散，此操作不可撤销。
           </p>
         ) : (

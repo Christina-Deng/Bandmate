@@ -602,6 +602,88 @@ textarea:focus-visible {
   color: var(--theme-slate-300);
 }
 
+/* Theme-safe surfaces (Day / Paper readable) */
+
+.status-banner-info {
+  border: 1px solid color-mix(in srgb, var(--theme-accent-500) 40%, transparent);
+  background: color-mix(in srgb, var(--theme-accent-500) 10%, var(--theme-slate-900));
+  color: var(--theme-slate-300);
+}
+
+.status-banner-neutral {
+  border: 1px solid color-mix(in srgb, var(--theme-slate-600) 80%, transparent);
+  background: color-mix(in srgb, var(--theme-slate-800) 92%, transparent);
+  color: var(--theme-slate-300);
+}
+
+.toast-default {
+  border: 1px solid color-mix(in srgb, var(--theme-slate-600) 80%, transparent);
+  background: color-mix(in srgb, var(--theme-slate-900) 96%, transparent);
+  color: var(--theme-slate-300);
+}
+
+.chip-idle {
+  border-color: var(--theme-slate-600);
+  color: var(--theme-slate-400);
+}
+
+.chip-idle:hover {
+  border-color: var(--theme-slate-500);
+  color: var(--theme-slate-300);
+}
+
+.control-toggle {
+  border: 1px solid var(--theme-slate-600);
+  background: color-mix(in srgb, var(--theme-slate-800) 85%, transparent);
+  color: var(--theme-slate-300);
+}
+
+.control-toggle-disabled {
+  border-color: var(--theme-slate-700);
+  background: color-mix(in srgb, var(--theme-slate-900) 55%, transparent);
+  color: var(--theme-slate-500);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: color-mix(in srgb, var(--theme-slate-800) 95%, transparent);
+  color: var(--theme-slate-300);
+}
+
+.btn-secondary:hover {
+  background: color-mix(in srgb, var(--theme-slate-700) 95%, transparent);
+}
+
+.empty-state-panel {
+  border: 1px dashed color-mix(in srgb, var(--theme-slate-600) 75%, transparent);
+  background: color-mix(in srgb, var(--theme-slate-900) 55%, transparent);
+}
+
+.dialog-panel {
+  border: 1px solid var(--theme-slate-700);
+  background: color-mix(in srgb, var(--theme-slate-900) 98%, transparent);
+  box-shadow: 0 20px 48px color-mix(in srgb, #000 22%, transparent);
+}
+
+.dialog-callout {
+  border: 1px solid color-mix(in srgb, var(--theme-slate-600) 80%, transparent);
+  background: color-mix(in srgb, var(--theme-slate-800) 90%, transparent);
+  color: var(--theme-slate-300);
+}
+
+.info-notice {
+  color: color-mix(in srgb, var(--theme-accent-500) 85%, var(--theme-slate-300));
+}
+
+.poster-bg--auth {
+  opacity: 0.65;
+}
+
+[data-theme="light"] .poster-bg--auth,
+[data-theme="paper"] .poster-bg--auth {
+  opacity: 0.48;
+}
+
 .page-title {
   font-family: var(--font-sans);
   font-size: clamp(1.65rem, 3vw, 2rem);

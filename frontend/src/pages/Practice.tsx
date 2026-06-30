@@ -282,10 +282,6 @@ export function PracticePage() {
           <span className="text-slate-400">练习工具：</span>
           本页可使用节拍器与调音器（桌面端右侧栏，手机端底部按钮）。
         </p>
-        <p>
-          <span className="rock-tag mr-2">SOON</span>
-          即将推出：练习邮件提醒
-        </p>
       </div>
     </div>
     </PracticeToolsLayout>

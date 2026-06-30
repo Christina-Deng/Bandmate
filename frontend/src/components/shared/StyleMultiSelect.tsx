@@ -31,7 +31,7 @@ export function StyleMultiSelect({ label, hint, selected, onChange }: Props) {
               className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                 active
                   ? 'border-accent-600 bg-accent-600 text-white'
-                  : 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+                  : 'chip-idle border hover:border-slate-500'
               }`}
             >
               {styleLabel}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getRecommendations } from '../api/songs';
 import { BandPicker } from '../components/band/BandPicker';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -22,9 +23,10 @@ export function SongRecommendPage() {
   const [useAi, setUseAi] = useState(readUseAiPreference);
   const [aiAvailable, setAiAvailable] = useState(false);
   const [songs, setSongs] = useState<RecommendedSong[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ok' | 'empty' | 'coming_soon' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ok' | 'empty' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [emptyHints, setEmptyHints] = useState<string[]>([]);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     if (bands.length === 0) {
@@ -49,16 +51,11 @@ export function SongRecommendPage() {
           setStatus('ok');
           setMessage(res.message ?? '');
           setEmptyHints([]);
-        } else if (res.status === 'empty') {
+        } else if (res.status === 'empty' || res.status === 'coming_soon') {
           setSongs([]);
           setStatus('empty');
           setMessage(res.message ?? '暂无匹配曲目');
           setEmptyHints(res.hints ?? []);
-        } else if (res.status === 'coming_soon') {
-          setSongs([]);
-          setStatus('coming_soon');
-          setMessage(res.message ?? '功能开发中，敬请期待');
-          setEmptyHints([]);
         } else {
           setSongs([]);
           setStatus('error');
@@ -70,8 +67,9 @@ export function SongRecommendPage() {
         setSongs([]);
         setStatus('error');
         setMessage('加载推荐失败，请稍后重试');
+        setEmptyHints([]);
       });
-  }, [viewBandId, useAi]);
+  }, [viewBandId, useAi, retryKey]);
 
   function handleUseAiChange(checked: boolean) {
     setUseAi(checked);
@@ -86,8 +84,15 @@ export function SongRecommendPage() {
 
   if (bands.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-700 bg-slate-900 p-8 text-center text-slate-400">
-        请先加入或创建乐队
+      <div className="empty-state-panel rounded-xl p-8 text-center">
+        <p className="text-lg text-slate-300">还没有加入乐队</p>
+        <p className="mt-2 text-sm text-slate-500">创建或加入乐队后，才能根据成员水平推荐曲目。</p>
+        <Link
+          to="/"
+          className="mt-6 inline-flex rounded-lg border border-accent-600 bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-500"
+        >
+          去首页创建 / 加入乐队
+        </Link>
       </div>
     );
   }
@@ -117,10 +122,8 @@ export function SongRecommendPage() {
           ，推荐适合排练的歌曲。
         </p>
         <label
-          className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm ${
-            aiAvailable ?
-              'border-slate-600 bg-slate-800/80 text-slate-200'
-            : 'cursor-not-allowed border-slate-700 bg-slate-900/50 text-slate-500'
+          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
+            aiAvailable ? 'control-toggle cursor-pointer' : 'control-toggle-disabled'
           }`}
           title={
             aiAvailable ?
@@ -140,14 +143,12 @@ export function SongRecommendPage() {
       </div>
 
       {status === 'loading' && (
-        <div className="rounded-xl border border-slate-700 bg-slate-900/50 p-12 text-center text-slate-400">
+        <div className="empty-state-panel rounded-xl p-12 text-center text-slate-400">
           {useAi && aiAvailable ? '正在生成 AI 推荐…' : '正在匹配曲库…'}
         </div>
       )}
 
-      {status === 'ok' && message && (
-        <p className="text-sm text-amber-400/90">{message}</p>
-      )}
+      {status === 'ok' && message && <p className="info-notice text-sm">{message}</p>}
 
       {status === 'ok' && songs.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2">
@@ -158,7 +159,7 @@ export function SongRecommendPage() {
       )}
 
       {(status === 'empty' || status === 'error') && (
-        <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center">
+        <div className="empty-state-panel rounded-xl p-12 text-center">
           <p className="text-lg text-slate-300">{status === 'error' ? '加载失败' : '暂无推荐'}</p>
           <p className="mt-2 text-sm text-slate-500">{message}</p>
           {emptyHints.length > 0 && (
@@ -171,13 +172,31 @@ export function SongRecommendPage() {
               ))}
             </ul>
           )}
-        </div>
-      )}
-
-      {status === 'coming_soon' && (
-        <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/50 p-12 text-center">
-          <p className="text-lg text-slate-300">功能开发中</p>
-          <p className="mt-2 text-sm text-slate-500">{message}</p>
+          {status === 'empty' && (
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <Link
+                to="/"
+                className="rounded-lg border border-accent-600 bg-accent-600 px-4 py-2 text-sm font-medium text-white hover:bg-accent-500"
+              >
+                去首页完善成员资料
+              </Link>
+              <Link
+                to="/practice"
+                className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:border-slate-500 hover:text-emphasis"
+              >
+                查看练习页
+              </Link>
+            </div>
+          )}
+          {status === 'error' && (
+            <button
+              type="button"
+              onClick={() => setRetryKey((k) => k + 1)}
+              className="mt-6 rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-300 hover:border-slate-500"
+            >
+              重试
+            </button>
+          )}
         </div>
       )}
     </div>

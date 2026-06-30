@@ -210,7 +210,7 @@ export function Tuner() {
         onClick={() => (state === 'listening' ? stop() : void start())}
         className={`w-full rounded-lg px-4 py-3 text-sm font-semibold transition-colors ${
           state === 'listening'
-            ? 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+            ? 'btn-secondary hover:bg-slate-700'
             : 'bg-accent-600 text-white hover:bg-accent-700'
         }`}
       >

@@ -50,10 +50,10 @@ export function BandPicker({
               onClick={() => toggle(band.id)}
               className={`rounded-full border px-3 py-1 font-display-heavy text-sm tracking-wide transition-colors ${
                 disabled
-                  ? 'cursor-not-allowed border-slate-700 bg-slate-800 text-slate-500 opacity-60'
+                  ? 'control-toggle-disabled border opacity-60'
                   : active
                     ? 'border-accent-600 bg-accent-600 text-white'
-                    : 'border-slate-600 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+                    : 'chip-idle border hover:border-slate-500'
               }`}
             >
               {band.name}

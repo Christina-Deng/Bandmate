@@ -2,10 +2,10 @@ import type { RecommendedSong } from '../../types/song';
 
 export function RecommendationCard({ song }: { song: RecommendedSong }) {
   return (
-    <article className="rounded-xl border border-slate-700 bg-slate-900 p-5 space-y-3">
+    <article className="poster-card space-y-3 rounded-xl p-5">
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h3 className="text-lg font-semibold">{song.title}</h3>
+          <h3 className="text-lg font-semibold text-emphasis">{song.title}</h3>
           <p className="text-sm text-slate-400">{song.artist}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
