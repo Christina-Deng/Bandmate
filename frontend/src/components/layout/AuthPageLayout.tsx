@@ -17,7 +17,7 @@ export function AuthPageLayout({ title, lead, children, footer }: Props) {
         <aside className="auth-brand relative hidden md:block">
           <p className="font-display-heavy text-5xl leading-none text-accent-600 lg:text-6xl">BandMate</p>
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">
-            乐队排练助手 — 打卡练、团队互相看见、一起把排练节奏稳住。
+            乐队的排练小助手 — 选对歌，记录练习，看见队友。
           </p>
           <p className="auth-watermark" aria-hidden>
             BANDMATE
