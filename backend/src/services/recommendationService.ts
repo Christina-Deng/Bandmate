@@ -4,6 +4,7 @@ import { loadSongSeed } from '../lib/songSeedLoader.js';
 import { normalizeAppLocale, type AppLocale } from '../lib/locale.js';
 import type { RecommendedSong, RecommendationResponse } from '../types/song.js';
 import { generateReasonsForSongs } from './recommendationAiService.js';
+import { formatAiFallbackMessage, type AiReasonFailure } from './aiFallbackMessage.js';
 import { getBand } from './bandService.js';
 import { bandToRuleEngineInput } from './bandProfileForRecommend.js';
 import {
@@ -62,11 +63,11 @@ async function pickWithOptionalAi(
   ruleInput: Omit<ReturnType<typeof bandToRuleEngineInput>, 'bandName'>,
   useAi: boolean,
   locale: AppLocale,
-): Promise<{ songs: RecommendedSong[]; aiUsed: boolean }> {
+): Promise<{ songs: RecommendedSong[]; aiUsed: boolean; aiFailure?: AiReasonFailure }> {
   const top = pool.slice(0, RECOMMEND_PICK_COUNT);
 
   if (useAi && isAiRecommendationAvailable()) {
-    const reasons = await generateReasonsForSongs({
+    const aiResult = await generateReasonsForSongs({
       bandName,
       stylePreferences: ruleInput.stylePreferences,
       members: ruleInput.members,
@@ -74,10 +75,10 @@ async function pickWithOptionalAi(
       locale,
     });
 
-    if (reasons) {
+    if (aiResult.reasons) {
       let aiReasonCount = 0;
       const songs = top.map((candidate) => {
-        const aiReason = reasons.get(candidate.song.id);
+        const aiReason = aiResult.reasons!.get(candidate.song.id);
         if (aiReason) aiReasonCount += 1;
         return mapCandidateToRecommendedSong(
           candidate,
@@ -91,6 +92,12 @@ async function pickWithOptionalAi(
         return { songs, aiUsed: true };
       }
     }
+
+    return {
+      songs: pickTopRuleOnly(pool, bandName, locale, RECOMMEND_PICK_COUNT),
+      aiUsed: false,
+      aiFailure: aiResult.failure ?? { code: 'validation' },
+    };
   }
 
   return {
@@ -141,7 +148,7 @@ export async function getRecommendationsForBand(
   }
 
   const useAi = options.useAi === true;
-  const { songs, aiUsed } = await pickWithOptionalAi(
+  const { songs, aiUsed, aiFailure } = await pickWithOptionalAi(
     pool,
     bandName,
     ruleInput,
@@ -158,9 +165,7 @@ export async function getRecommendationsForBand(
 
   const aiFallbackMessage =
     useAi && aiAvailable && !aiUsed ?
-      locale === 'en' ?
-        'AI unavailable; using rule-based reasons'
-      : 'AI 暂时不可用，已使用规则推荐'
+      formatAiFallbackMessage(locale, aiFailure)
     : undefined;
 
   const infoSep = locale === 'en' ? '; ' : '；';

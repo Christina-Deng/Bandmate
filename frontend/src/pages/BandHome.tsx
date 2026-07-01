@@ -24,7 +24,8 @@ export function BandHomePage() {
     if (!message) return;
     setJoinMessage(message);
     navigate('.', { replace: true, state: null });
-  }, [location.state, navigate]);
+    void refresh();
+  }, [location.state, navigate, refresh]);
 
   if (loading) return <p className="text-slate-400">{t('common.loading')}</p>;
 

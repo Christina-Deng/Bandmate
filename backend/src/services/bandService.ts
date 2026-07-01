@@ -111,7 +111,7 @@ export async function joinBand(input: { userId: string; inviteCode: string }) {
     where: { bandId_userId: { bandId: band.id, userId: input.userId } },
   });
   if (alreadyMember) {
-    throw Object.assign(new Error('你已加入该乐队'), { statusCode: 409 });
+    return getBand(band.id, input.userId);
   }
 
   await prisma.bandMember.create({

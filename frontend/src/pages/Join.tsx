@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { joinBand } from '../api/bands';
 import { getApiErrorMessage } from '../api/client';
 import { AppearanceMenu } from '../components/layout/AppearanceMenu';
@@ -20,7 +19,6 @@ export function JoinPage() {
   const { t } = useLocale();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [joining, setJoining] = useState(false);
   const [error, setError] = useState('');
   const joinStartedRef = useRef(false);
 
@@ -32,7 +30,6 @@ export function JoinPage() {
   }, [codeFromUrl]);
 
   async function attemptJoin(code: string) {
-    setJoining(true);
     setError('');
     try {
       const band = await joinBand(code);
@@ -42,16 +39,7 @@ export function JoinPage() {
         state: { joinMessage: t('auth.join.success', { name: band.name }) },
       });
     } catch (err) {
-      if (axios.isAxiosError(err) && err.response?.status === 409) {
-        clearPendingInviteCode();
-        navigate('/', {
-          replace: true,
-          state: { joinMessage: getApiErrorMessage(err, t('auth.join.alreadyJoined')) },
-        });
-        return;
-      }
-      setError(getApiErrorMessage(err, t('auth.join.checkCode')));
-      setJoining(false);
+      setError(getApiErrorMessage(err, t('auth.join.failed')));
       joinStartedRef.current = false;
     }
   }
@@ -94,7 +82,7 @@ export function JoinPage() {
         <h1 className="page-title text-2xl">{t('auth.join.title')}</h1>
         <p className="page-lead mt-2">
           {t('auth.join.inviteHint')}{' '}
-          <code className="rounded bg-slate-800 px-2 py-0.5">{inviteCode}</code>
+          <code className="rounded bg-slate-800 px-2 py-1">{inviteCode}</code>
         </p>
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">
           <Link
@@ -114,20 +102,6 @@ export function JoinPage() {
     );
   }
 
-  async function handleRetry() {
-    if (!inviteCode) return;
-    joinStartedRef.current = true;
-    await attemptJoin(inviteCode);
-  }
-
-  if (joining && !error) {
-    return (
-      <JoinShell>
-        <p className="text-slate-300">{t('auth.join.joining')}</p>
-      </JoinShell>
-    );
-  }
-
   if (error) {
     return (
       <JoinShell>
@@ -136,7 +110,10 @@ export function JoinPage() {
         <div className="mt-6 flex flex-wrap gap-2">
           <button
             type="button"
-            onClick={() => void handleRetry()}
+            onClick={() => {
+              joinStartedRef.current = true;
+              void attemptJoin(inviteCode);
+            }}
             className="rounded-lg bg-accent-600 px-4 py-2 text-sm font-medium hover:bg-accent-500"
           >
             {t('common.retry')}
@@ -153,7 +130,11 @@ export function JoinPage() {
     );
   }
 
-  return <Navigate to="/" replace />;
+  return (
+    <JoinShell>
+      <p className="text-slate-300">{t('auth.join.joining')}</p>
+    </JoinShell>
+  );
 }
 
 function JoinShell({ children }: { children: React.ReactNode }) {

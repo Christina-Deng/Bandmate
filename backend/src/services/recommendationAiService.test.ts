@@ -63,7 +63,7 @@ describe('generateReasonsForSongs', () => {
       songs: [],
     });
 
-    expect(result).toBeNull();
+    expect(result.reasons).toBeNull();
 
     if (prevLlm !== undefined) process.env.LLM_API_KEY = prevLlm;
   });

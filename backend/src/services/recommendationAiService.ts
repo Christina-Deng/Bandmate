@@ -11,6 +11,15 @@ import {
   formatPartsSummary,
 } from './recommendationFormatter.js';
 import type { RuleEngineInput, ScoredCandidate } from './recommendationRuleEngine.js';
+import type { AppLocale } from '../lib/locale.js';
+import type { AiReasonFailure, AiReasonFailureCode } from './aiFallbackMessage.js';
+
+export type { AiReasonFailure, AiReasonFailureCode };
+
+export interface GenerateReasonsResult {
+  reasons: Map<string, string> | null;
+  failure?: AiReasonFailure;
+}
 
 export interface AiReasonInput {
   bandName: string;
@@ -22,6 +31,7 @@ export interface AiReasonInput {
 
 interface ChatCompletionResponse {
   choices?: { message?: { content?: string } }[];
+  error?: { message?: string; code?: string };
 }
 
 type SongRef = Pick<SeedSong, 'title' | 'artist'>;
@@ -93,6 +103,25 @@ function parseReasonsJson(content: string): { songId: string; reason: string }[]
   }
 }
 
+async function readProviderError(response: Response): Promise<string | undefined> {
+  try {
+    const body = (await response.json()) as { error?: { message?: string } };
+    return body.error?.message;
+  } catch {
+    return undefined;
+  }
+}
+
+function failureFromHttpStatus(status: number, providerMessage?: string): AiReasonFailure {
+  if (status === 429) {
+    return { code: 'rate_limit', providerMessage };
+  }
+  if (status === 401 || status === 403) {
+    return { code: 'auth', providerMessage };
+  }
+  return { code: 'provider_error', providerMessage };
+}
+
 const SYSTEM_PROMPT_ZH = `你是 BandMate 乐队排练顾问。曲目已由系统选定，你只需为每首歌写推荐理由。
 
 硬性规则：
@@ -116,8 +145,10 @@ Rules:
  */
 export async function generateReasonsForSongs(
   input: AiReasonInput,
-): Promise<Map<string, string> | null> {
-  if (!isAiRecommendationAvailable() || input.songs.length === 0) return null;
+): Promise<GenerateReasonsResult> {
+  if (!isAiRecommendationAvailable() || input.songs.length === 0) {
+    return { reasons: null };
+  }
 
   const apiKey = getLlmApiKey()!;
   const byId = new Map(input.songs.map((c) => [c.song.id, c.song]));
@@ -143,23 +174,33 @@ export async function generateReasonsForSongs(
       }),
     });
   } catch {
-    return null;
+    return { reasons: null, failure: { code: 'network' } };
   }
 
-  if (!response.ok) return null;
+  if (!response.ok) {
+    const providerMessage = await readProviderError(response);
+    return {
+      reasons: null,
+      failure: failureFromHttpStatus(response.status, providerMessage),
+    };
+  }
 
   let data: ChatCompletionResponse;
   try {
     data = (await response.json()) as ChatCompletionResponse;
   } catch {
-    return null;
+    return { reasons: null, failure: { code: 'bad_response' } };
   }
 
   const content = data.choices?.[0]?.message?.content;
-  if (!content) return null;
+  if (!content) {
+    return { reasons: null, failure: { code: 'bad_response' } };
+  }
 
   const rows = parseReasonsJson(content);
-  if (!rows) return null;
+  if (!rows) {
+    return { reasons: null, failure: { code: 'bad_response' } };
+  }
 
   const result = new Map<string, string>();
   for (const row of rows) {
@@ -173,7 +214,11 @@ export async function generateReasonsForSongs(
     }
   }
 
-  return result.size > 0 ? result : null;
+  if (result.size === 0) {
+    return { reasons: null, failure: { code: 'validation' } };
+  }
+
+  return { reasons: result };
 }
 
 /** @deprecated Use generateReasonsForSongs — kept for tests */
@@ -181,7 +226,7 @@ export async function pickRecommendationsWithAi(
   input: AiReasonInput & { candidates: ScoredCandidate[]; pickCount: number },
 ): Promise<{ picks: { songId: string; reason: string }[] } | null> {
   const songs = input.candidates.slice(0, input.pickCount);
-  const reasons = await generateReasonsForSongs({ ...input, songs });
+  const { reasons } = await generateReasonsForSongs({ ...input, songs });
   if (!reasons) return null;
   return {
     picks: songs
