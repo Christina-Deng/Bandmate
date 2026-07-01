@@ -11,7 +11,6 @@ import {
   formatPartsSummary,
 } from './recommendationFormatter.js';
 import type { RuleEngineInput, ScoredCandidate } from './recommendationRuleEngine.js';
-import type { AppLocale } from '../lib/locale.js';
 import type { AiReasonFailure, AiReasonFailureCode } from './aiFallbackMessage.js';
 
 export type { AiReasonFailure, AiReasonFailureCode };
