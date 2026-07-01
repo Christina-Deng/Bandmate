@@ -1,3 +1,4 @@
+import type { AppLocale } from '../lib/locale.js';
 import {
   getLlmApiKey,
   isAiRecommendationAvailable,
@@ -15,8 +16,8 @@ export interface AiReasonInput {
   bandName: string;
   stylePreferences: string[];
   members: RuleEngineInput['members'];
-  /** Already-selected songs — AI only writes reasons, does not change picks */
   songs: ScoredCandidate[];
+  locale?: AppLocale;
 }
 
 interface ChatCompletionResponse {
@@ -50,6 +51,7 @@ export function isReasonGroundedToSong(
 }
 
 function buildUserPayload(input: AiReasonInput): string {
+  const locale = input.locale ?? 'zh';
   return JSON.stringify({
     bandName: input.bandName,
     stylePreferences: input.stylePreferences,
@@ -63,8 +65,8 @@ function buildUserPayload(input: AiReasonInput): string {
       title: song.title,
       artist: song.artist,
       style: song.style,
-      arrangementSummary: formatArrangementSummary(song),
-      partsSummary: formatPartsSummary(song),
+      arrangementSummary: formatArrangementSummary(song, locale),
+      partsSummary: formatPartsSummary(song, locale),
       arrangementHints,
       programHints,
     })),
@@ -91,13 +93,22 @@ function parseReasonsJson(content: string): { songId: string; reason: string }[]
   }
 }
 
-const SYSTEM_PROMPT = `你是 BandMate 乐队排练顾问。曲目已由系统选定，你只需为每首歌写推荐理由。
+const SYSTEM_PROMPT_ZH = `你是 BandMate 乐队排练顾问。曲目已由系统选定，你只需为每首歌写推荐理由。
 
 硬性规则：
 1. 每条 reason 必须写出该曲目自己的 title（建议用书名号《》）
 2. 禁止提及其他曲目的 title 或 artist
 3. 仅根据提供的编制、难度、hints 说明，不要编造歌曲背景或剧情
 4. 输出纯 JSON：{"reasons":[{"songId":"song-001","reason":"..."}]}`;
+
+const SYSTEM_PROMPT_EN = `You are BandMate, a band rehearsal advisor. Songs are pre-selected — write a recommendation reason for each only.
+
+Rules:
+1. Each reason must mention that song's title (quotes OK)
+2. Do not mention any other song's title or artist
+3. Use only the provided lineup, difficulty, and hints — no invented backstory
+4. Write every reason in English
+5. Output JSON only: {"reasons":[{"songId":"song-001","reason":"..."}]}`;
 
 /**
  * Generate grounded reasons for pre-selected songs.
@@ -111,6 +122,8 @@ export async function generateReasonsForSongs(
   const apiKey = getLlmApiKey()!;
   const byId = new Map(input.songs.map((c) => [c.song.id, c.song]));
   const allRefs = input.songs.map((c) => c.song);
+  const locale = input.locale ?? 'zh';
+  const systemPrompt = locale === 'en' ? SYSTEM_PROMPT_EN : SYSTEM_PROMPT_ZH;
 
   let response: Response;
   try {
@@ -124,7 +137,7 @@ export async function generateReasonsForSongs(
         model: LLM_MODEL,
         temperature: 0.3,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: buildUserPayload(input) },
         ],
       }),

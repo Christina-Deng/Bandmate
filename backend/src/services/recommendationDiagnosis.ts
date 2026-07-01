@@ -1,3 +1,4 @@
+import type { AppLocale } from '../lib/locale.js';
 import type { SeedSong } from '../types/seedSong.js';
 import {
   computeStyleScore,
@@ -8,10 +9,14 @@ import {
 
 type FailureKind = 'style' | 'skill' | 'arrangement';
 
-function classifyFailure(song: SeedSong, input: RuleEngineInput): FailureKind | 'ok' {
+function classifyFailure(
+  song: SeedSong,
+  input: RuleEngineInput,
+  locale: AppLocale,
+): FailureKind | 'ok' {
   if (computeStyleScore(song, input.stylePreferences) <= 0) return 'style';
-  if (evaluateSong(song, input.members, 0)) return 'ok';
-  if (evaluateSong(song, input.members, 1)) return 'skill';
+  if (evaluateSong(song, input.members, 0, locale)) return 'ok';
+  if (evaluateSong(song, input.members, 1, locale)) return 'skill';
   return 'arrangement';
 }
 
@@ -27,12 +32,13 @@ export interface RecommendationDiagnosis {
 export function diagnoseEmptyRecommendations(
   songs: SeedSong[],
   input: RuleEngineInput,
+  locale: AppLocale = 'zh',
 ): RecommendationDiagnosis {
   const counts: Record<FailureKind, number> = { style: 0, skill: 0, arrangement: 0 };
   let okStretchOnly = 0;
 
   for (const song of songs) {
-    const kind = classifyFailure(song, input);
+    const kind = classifyFailure(song, input, locale);
     if (kind === 'ok') continue;
     if (kind === 'skill') okStretchOnly += 1;
     else counts[kind] += 1;
@@ -42,6 +48,57 @@ export function diagnoseEmptyRecommendations(
   const { members, stylePreferences } = input;
   const unassigned = countMembersWithoutInstrument(members);
   const lowSkill = members.filter((m) => m.skillLevel <= 1).length;
+
+  if (locale === 'en') {
+    if (unassigned > 0) {
+      hints.push(
+        `${unassigned} member(s) have not completed the profile (instrument shows as Other). Complete “My profile” so lineup matching works.`,
+      );
+    }
+
+    if (lowSkill > 0 && members.length > 0) {
+      hints.push(
+        `${lowSkill} member(s) are at skill level 1; most songs need level 2+. Updating the questionnaire improves matches.`,
+      );
+    }
+
+    if (stylePreferences.length > 0 && counts.style > counts.arrangement) {
+      hints.push(
+        'Band styles overlap little with the catalog — try 2–3 genres in band settings (e.g. rock + pop + indie).',
+      );
+    } else if (stylePreferences.length === 0) {
+      hints.push('No band style preferences yet — edit the band and pick genres you rehearse.');
+    } else if (input.stylePreferenceSource === 'members') {
+      hints.push(
+        'No unified band style set; matching uses merged member questionnaires. Consider setting shared styles on the band page.',
+      );
+    }
+
+    if (counts.arrangement >= counts.style && counts.arrangement > 0) {
+      hints.push(
+        'Lineup is missing required parts (e.g. drums, vocals). Add members or pick songs with program fallbacks.',
+      );
+    }
+
+    if (okStretchOnly > 0 && hints.length < 4) {
+      hints.push(
+        `${okStretchOnly} style-matched song(s) were skipped — members are 1 skill level short. Fix instruments in profiles or allow stretch picks.`,
+      );
+    }
+
+    if (members.length <= 1) {
+      hints.push(
+        'Small band — aim for guitar, bass, and drums, or choose small-lineup-friendly songs.',
+      );
+    }
+
+    const message =
+      hints.length > 0 ?
+        'No matches yet. Try the suggestions below and refresh.'
+      : 'No matches yet. Adjust band styles or complete member profiles.';
+
+    return { message, hints: hints.slice(0, 4) };
+  }
 
   if (unassigned > 0) {
     hints.push(

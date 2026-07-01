@@ -4,7 +4,7 @@ import { getRecommendationsForBand } from '../services/recommendationService.js'
 
 export async function registerSongRoutes(app: FastifyInstance) {
   app.get('/songs/recommend', { preHandler: authenticate }, async (request, reply) => {
-    const query = request.query as { bandId?: string; useAi?: string };
+    const query = request.query as { bandId?: string; useAi?: string; locale?: string };
     if (!query.bandId) {
       return reply.status(400).send({
         error: { code: 'VALIDATION_ERROR', message: '请提供 bandId' },
@@ -14,7 +14,10 @@ export async function registerSongRoutes(app: FastifyInstance) {
     const useAi = query.useAi === 'true' || query.useAi === '1';
 
     try {
-      return await getRecommendationsForBand(query.bandId, request.userId!, { useAi });
+      return await getRecommendationsForBand(query.bandId, request.userId!, {
+        useAi,
+        locale: query.locale,
+      });
     } catch (err: unknown) {
       const e = err as { statusCode?: number; message?: string };
       if (e.statusCode === 403) {

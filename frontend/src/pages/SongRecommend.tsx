@@ -22,7 +22,7 @@ function readUseAiPreference(): boolean {
 
 export function SongRecommendPage() {
   const { bands, loading } = useBand();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [viewBandId, setViewBandId] = useState('');
   const [useAi, setUseAi] = useState(readUseAiPreference);
   const [aiAvailable, setAiAvailable] = useState(false);
@@ -47,7 +47,7 @@ export function SongRecommendPage() {
   useEffect(() => {
     if (!viewBandId) return;
     setStatus('loading');
-    void getRecommendations(viewBandId, useAi)
+    void getRecommendations(viewBandId, useAi, locale)
       .then((res) => {
         setAiAvailable(res.aiAvailable === true);
         if (res.status === 'ok') {
@@ -73,7 +73,7 @@ export function SongRecommendPage() {
         setMessage(t('songs.loadFailedRetry'));
         setEmptyHints([]);
       });
-  }, [viewBandId, useAi, retryKey, t]);
+  }, [viewBandId, useAi, retryKey, locale, t]);
 
   function handleUseAiChange(checked: boolean) {
     setUseAi(checked);

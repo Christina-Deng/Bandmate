@@ -1,6 +1,7 @@
 import { FEATURES } from '../config/features.js';
 import { isAiRecommendationAvailable } from '../config/ai.js';
 import { loadSongSeed } from '../lib/songSeedLoader.js';
+import { normalizeAppLocale, type AppLocale } from '../lib/locale.js';
 import type { RecommendedSong, RecommendationResponse } from '../types/song.js';
 import { generateReasonsForSongs } from './recommendationAiService.js';
 import { getBand } from './bandService.js';
@@ -24,6 +25,7 @@ export const RECOMMEND_PICK_COUNT = 6;
 function mapCandidateToRecommendedSong(
   candidate: ScoredCandidate,
   bandName: string,
+  locale: AppLocale,
   reason?: string,
 ): RecommendedSong {
   const { song } = candidate;
@@ -33,9 +35,9 @@ function mapCandidateToRecommendedSong(
     artist: song.artist,
     style: song.style,
     bpm: song.bpm,
-    arrangementSummary: formatArrangementSummary(song),
-    partsSummary: formatPartsSummary(song),
-    reason: reason ?? buildFallbackReason(candidate, bandName),
+    arrangementSummary: formatArrangementSummary(song, locale),
+    partsSummary: formatPartsSummary(song, locale),
+    reason: reason ?? buildFallbackReason(candidate, bandName, locale),
     arrangementHints: candidate.arrangementHints,
     programHints: candidate.programHints,
     stretchHints: candidate.stretchHints,
@@ -48,9 +50,10 @@ function mapCandidateToRecommendedSong(
 function pickTopRuleOnly(
   candidates: ScoredCandidate[],
   bandName: string,
+  locale: AppLocale,
   count: number,
 ): RecommendedSong[] {
-  return candidates.slice(0, count).map((c) => mapCandidateToRecommendedSong(c, bandName));
+  return candidates.slice(0, count).map((c) => mapCandidateToRecommendedSong(c, bandName, locale));
 }
 
 async function pickWithOptionalAi(
@@ -58,6 +61,7 @@ async function pickWithOptionalAi(
   bandName: string,
   ruleInput: Omit<ReturnType<typeof bandToRuleEngineInput>, 'bandName'>,
   useAi: boolean,
+  locale: AppLocale,
 ): Promise<{ songs: RecommendedSong[]; aiUsed: boolean }> {
   const top = pool.slice(0, RECOMMEND_PICK_COUNT);
 
@@ -67,6 +71,7 @@ async function pickWithOptionalAi(
       stylePreferences: ruleInput.stylePreferences,
       members: ruleInput.members,
       songs: top,
+      locale,
     });
 
     if (reasons) {
@@ -77,7 +82,8 @@ async function pickWithOptionalAi(
         return mapCandidateToRecommendedSong(
           candidate,
           bandName,
-          aiReason ?? buildFallbackReason(candidate, bandName),
+          locale,
+          aiReason ?? buildFallbackReason(candidate, bandName, locale),
         );
       });
 
@@ -88,7 +94,7 @@ async function pickWithOptionalAi(
   }
 
   return {
-    songs: pickTopRuleOnly(pool, bandName, RECOMMEND_PICK_COUNT),
+    songs: pickTopRuleOnly(pool, bandName, locale, RECOMMEND_PICK_COUNT),
     aiUsed: false,
   };
 }
@@ -96,15 +102,17 @@ async function pickWithOptionalAi(
 export async function getRecommendationsForBand(
   bandId: string,
   userId: string,
-  options: { useAi?: boolean } = {},
+  options: { useAi?: boolean; locale?: string } = {},
 ): Promise<RecommendationResponse> {
   const aiAvailable = isAiRecommendationAvailable();
+  const locale = normalizeAppLocale(options.locale);
 
   if (!FEATURES.SONG_RECOMMENDATION) {
     return {
       status: 'coming_soon',
       songs: [],
-      message: '功能开发中，敬请期待',
+      message:
+        locale === 'en' ? 'Coming soon' : '功能开发中，敬请期待',
       aiAvailable,
       aiUsed: false,
     };
@@ -113,14 +121,15 @@ export async function getRecommendationsForBand(
   const band = await getBand(bandId, userId);
   const profile = bandToRuleEngineInput(band);
   const { bandName, ...ruleInput } = profile;
+  const engineInput = { ...ruleInput, locale };
 
-  const pool = rankCandidates(scoreCandidates(loadSongSeed(), ruleInput)).slice(
+  const pool = rankCandidates(scoreCandidates(loadSongSeed(), engineInput)).slice(
     0,
     RECOMMEND_CANDIDATE_POOL,
   );
 
   if (pool.length === 0) {
-    const diagnosis = diagnoseEmptyRecommendations(loadSongSeed(), ruleInput);
+    const diagnosis = diagnoseEmptyRecommendations(loadSongSeed(), engineInput, locale);
     return {
       status: 'empty',
       songs: [],
@@ -132,16 +141,29 @@ export async function getRecommendationsForBand(
   }
 
   const useAi = options.useAi === true;
-  const { songs, aiUsed } = await pickWithOptionalAi(pool, bandName, ruleInput, useAi);
+  const { songs, aiUsed } = await pickWithOptionalAi(
+    pool,
+    bandName,
+    ruleInput,
+    useAi,
+    locale,
+  );
 
   const styleSourceMessage =
     profile.stylePreferenceSource === 'members' ?
-      '乐队未设置统一风格，已根据成员问卷中的偏好匹配'
+      locale === 'en' ?
+        'No band-wide style set; matched member questionnaire preferences'
+      : '乐队未设置统一风格，已根据成员问卷中的偏好匹配'
     : undefined;
 
   const aiFallbackMessage =
-    useAi && aiAvailable && !aiUsed ? 'AI 暂时不可用，已使用规则推荐' : undefined;
+    useAi && aiAvailable && !aiUsed ?
+      locale === 'en' ?
+        'AI unavailable; using rule-based reasons'
+      : 'AI 暂时不可用，已使用规则推荐'
+    : undefined;
 
+  const infoSep = locale === 'en' ? '; ' : '；';
   const infoMessages = [aiFallbackMessage, styleSourceMessage].filter(Boolean);
 
   return {
@@ -149,6 +171,6 @@ export async function getRecommendationsForBand(
     songs,
     aiAvailable,
     aiUsed,
-    message: infoMessages.length > 0 ? infoMessages.join('；') : undefined,
+    message: infoMessages.length > 0 ? infoMessages.join(infoSep) : undefined,
   };
 }

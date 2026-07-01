@@ -4,6 +4,7 @@ import type { RecommendedSong } from '../../types/song';
 export function RecommendationCard({ song }: { song: RecommendedSong }) {
   const { t, locale } = useLocale();
   const hintSep = locale === 'en' ? '; ' : '；';
+  const labelSep = locale === 'en' ? ': ' : '：';
 
   return (
     <article className="poster-card space-y-3 rounded-xl p-5">
@@ -41,17 +42,17 @@ export function RecommendationCard({ song }: { song: RecommendedSong }) {
       </dl>
       {song.stretchHints.length > 0 && (
         <p className="recommend-hint-stretch text-xs">
-          {t('songs.card.stretchHints')}：{song.stretchHints.join(hintSep)}
+          {t('songs.card.stretchHints')}{labelSep}{song.stretchHints.join(hintSep)}
         </p>
       )}
       {song.arrangementHints.length > 0 && (
         <p className="recommend-hint-warn text-xs">
-          {t('songs.card.arrangementHints')}：{song.arrangementHints.join(hintSep)}
+          {t('songs.card.arrangementHints')}{labelSep}{song.arrangementHints.join(hintSep)}
         </p>
       )}
       {song.programHints.length > 0 && (
         <p className="recommend-hint-program text-xs">
-          {t('songs.card.programHints')}：{song.programHints.join(hintSep)}
+          {t('songs.card.programHints')}{labelSep}{song.programHints.join(hintSep)}
         </p>
       )}
       <a

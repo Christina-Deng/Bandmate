@@ -4,6 +4,7 @@ import axios from 'axios';
 import { joinBand } from '../api/bands';
 import { getApiErrorMessage } from '../api/client';
 import { AppearanceMenu } from '../components/layout/AppearanceMenu';
+import { BrandWordmark } from '../components/layout/BrandWordmark';
 import { LanguageSwitcher } from '../components/layout/LanguageSwitcher';
 import { useAuth } from '../hooks/useAuth';
 import { useLocale } from '../hooks/useLocale';
@@ -159,7 +160,7 @@ function JoinShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="auth-shell mx-auto max-w-md px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
-        <span className="font-display-heavy text-2xl tracking-widest text-accent-600">BandMate</span>
+        <BrandWordmark className="text-2xl" />
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <AppearanceMenu />

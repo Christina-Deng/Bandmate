@@ -1,4 +1,6 @@
-import { FALLBACK_LABELS, type SeedSong, type SongPartId } from '../types/seedSong.js';
+import type { AppLocale } from '../lib/locale.js';
+import type { SeedSong, SongPartId } from '../types/seedSong.js';
+import { getFallbackLabel, getPartLabel } from './recommendationLabels.js';
 
 export type RuleEngineInstrument = 'GUITAR' | 'BASS' | 'DRUMS' | 'VOCALS' | 'KEYBOARD' | 'OTHER';
 
@@ -12,6 +14,7 @@ export interface RuleEngineInput {
   stylePreferences: string[];
   stylePreferenceSource?: 'band' | 'members' | 'none';
   members: RuleEngineMember[];
+  locale?: AppLocale;
 }
 
 export interface ScoredCandidate {
@@ -28,14 +31,9 @@ export interface ScoredCandidate {
 /** When style-matched candidates fall below this, include skill-fit songs outside band styles. */
 export const STYLE_MATCH_MIN = 6;
 
-const PART_LABELS: Record<SongPartId, string> = {
-  vocals: '主唱',
-  rhythmGuitar: '节奏吉他',
-  leadGuitar: '主音吉他',
-  bass: '贝斯',
-  drums: '鼓',
-  keyboard: '键盘',
-};
+function resolveLocale(locale?: AppLocale): AppLocale {
+  return locale ?? 'zh';
+}
 
 interface BandCoverage {
   vocals?: RuleEngineMember;
@@ -120,6 +118,7 @@ export function evaluateSong(
   song: SeedSong,
   members: RuleEngineMember[],
   maxSkillShortfall = 0,
+  locale: AppLocale = 'zh',
 ): ScoredCandidate | null {
   const coverage = assignCoverage(members);
   const arrangementHints: string[] = [];
@@ -141,7 +140,9 @@ export function evaluateSong(
       if (gap < 0) {
         isStretch = true;
         stretchHints.push(
-          `${PART_LABELS[part]}（${player.displayName}）当前 ${player.skillLevel} 级，本曲建议 ${minLevel} 级，排练前需加强`,
+          locale === 'en' ?
+            `${getPartLabel(part, locale)} (${player.displayName}) is level ${player.skillLevel}; song suggests ${minLevel} — extra prep needed`
+          : `${getPartLabel(part, locale)}（${player.displayName}）当前 ${player.skillLevel} 级，本曲建议 ${minLevel} 级，排练前需加强`,
         );
       }
       headroom += gap;
@@ -149,18 +150,29 @@ export function evaluateSong(
     }
 
     const fallback = song.fallbacks[fallbackKeyForPart(part)];
-    const fbLabel = fallback ? FALLBACK_LABELS[fallback] : undefined;
+    const fbLabel = fallback ? getFallbackLabel(fallback, locale) : undefined;
+    const partLabel = getPartLabel(part, locale);
 
     if (required) {
       if (!fallback || fallback === 'omit' || fallback === 'not_applicable') {
         return null;
       }
-      arrangementHints.push(`缺${PART_LABELS[part]} → ${fbLabel ?? fallback}`);
+      arrangementHints.push(
+        locale === 'en' ?
+          `Missing ${partLabel} → ${fbLabel ?? fallback}`
+        : `缺${partLabel} → ${fbLabel ?? fallback}`,
+      );
       if (fallback.startsWith('program') || fallback === 'cajon' || fallback === 'keyboard_bass') {
-        programHints.push(`${PART_LABELS[part]}：${fbLabel}`);
+        programHints.push(
+          locale === 'en' ? `${partLabel}: ${fbLabel}` : `${partLabel}：${fbLabel}`,
+        );
       }
     } else if (fallback && fallback !== 'not_applicable' && fallback !== 'omit') {
-      arrangementHints.push(`可选${PART_LABELS[part]} → ${fbLabel ?? fallback}`);
+      arrangementHints.push(
+        locale === 'en' ?
+          `Optional ${partLabel} → ${fbLabel ?? fallback}`
+        : `可选${partLabel} → ${fbLabel ?? fallback}`,
+      );
     }
   }
 
@@ -177,12 +189,13 @@ export function evaluateSong(
 
 export function scoreCandidates(songs: SeedSong[], input: RuleEngineInput): ScoredCandidate[] {
   const { stylePreferences: preferences } = input;
+  const locale = resolveLocale(input.locale);
   const strictStyleMatch: ScoredCandidate[] = [];
   const strictStyleMiss: ScoredCandidate[] = [];
   const strictIds = new Set<string>();
 
   for (const song of songs) {
-    const scored = evaluateSong(song, input.members, 0);
+    const scored = evaluateSong(song, input.members, 0, locale);
     if (!scored) continue;
     scored.styleScore = computeStyleScore(song, preferences);
     strictIds.add(song.id);
@@ -195,7 +208,7 @@ export function scoreCandidates(songs: SeedSong[], input: RuleEngineInput): Scor
 
   for (const song of songs) {
     if (strictIds.has(song.id)) continue;
-    const scored = evaluateSong(song, input.members, 1);
+    const scored = evaluateSong(song, input.members, 1, locale);
     if (!scored || !scored.isStretch) continue;
     scored.styleScore = computeStyleScore(song, preferences);
     if (scored.styleScore > 0) {
