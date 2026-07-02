@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://YOUR-RAILWAY-BACKEND.up.railway.app/:path*"
+      "destination": "https://bandmate-production-528b.up.railway.app/:path*"
     }
   ]
 }
